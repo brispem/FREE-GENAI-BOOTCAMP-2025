@@ -1,0 +1,23 @@
+# IDE/Editor folders
+.vs/
+.vscode/
+.idea/
+
+# Python cache
+__pycache__/
+.pytest_cache/
+
+# Node modules
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+
+# Database files
+*.db
+*.sqlite3 

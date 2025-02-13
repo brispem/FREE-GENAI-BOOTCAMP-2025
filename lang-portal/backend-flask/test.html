@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Study Sessions API</title>
+</head>
+<body>
+    <h2>Create Study Session</h2>
+    <button onclick="testCreateSession()">Test Create Session</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testCreateSession() {
+            try {
+                const response = await fetch('http://localhost:5000/api/study-sessions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    },
+                    body: JSON.stringify({
+                        group_id: 1,
+                        study_activity_id: 1
+                    }),
+                    mode: 'cors'
+                });
+                const data = await response.json();
+                document.getElementById('result').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('result').textContent = error.toString();
+            }
+        }
+    </script>
+</body>
+</html> 
