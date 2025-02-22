@@ -31,6 +31,38 @@ Last Updated: March 2024
    - Word group management
    - Session history
 
+## March 2024 Updates
+
+### Backend Migration
+- Moved from Flask to Node.js backend due to persistent CORS issues
+- All frontend components now communicate with Node.js backend on port 3001
+- Activity launching and dashboard stats now handled by Node.js
+
+### Updated Study Activities
+Current activities:
+1. **Listening Practice** 🎧
+   - Streamlit-based application (port 8501)
+   - Spanish audio comprehension
+   - YouTube transcript integration
+   - Interactive exercises
+
+2. **Writing Practice** ✍️
+   - Gradio-based application (port 8081)
+   - Handwriting practice
+   - AI-powered feedback
+   - Sentence generation
+
+3. **Flashcards** 🎴 (Coming Soon)
+   - Vocabulary practice
+   - Spaced repetition
+   - Progress tracking
+
+### Technical Updates
+- ActivityLauncher.tsx now handles Python app launching via Node.js
+- Updated port configurations (3001 for backend)
+- Removed Flask-specific error handling
+- Simplified CORS handling through Node.js
+
 ## Setup & Installation
 
 ### Prerequisites

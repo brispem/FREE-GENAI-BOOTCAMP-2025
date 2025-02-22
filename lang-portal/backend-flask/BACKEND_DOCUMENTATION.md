@@ -285,3 +285,35 @@ sqlite3 word_bank.db < backup.sql
 - Regular database backups
 - Monitor error logs
 - Test all endpoints 
+
+## March 2024 Migration Update
+
+### Backend Migration
+The project has migrated from Flask to Node.js for the main backend due to:
+1. Persistent CORS issues with Flask
+2. Simpler process management in Node.js
+3. More reliable activity launching
+
+### Current Architecture
+- **Main Backend**: Node.js (port 3001)
+  - Handles activity launching
+  - Manages dashboard stats
+  - Routes API requests
+
+- **Learning Activities**:
+  1. Listening Practice (Streamlit, port 8501)
+  2. Writing Practice (Gradio, port 8081)
+
+### Migration Benefits
+- Resolved CORS issues
+- Simplified deployment
+- More reliable activity launching
+- Consistent port management
+
+### Historical Note
+The original Flask implementation (documented above) provided valuable learnings about:
+- Database structure
+- API design
+- Testing approaches
+
+This documentation is maintained for reference and to track the project's evolution. 

@@ -1,0 +1,10 @@
+# Environment variables
+.env
+*.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+app.log
+gradio_app.log 

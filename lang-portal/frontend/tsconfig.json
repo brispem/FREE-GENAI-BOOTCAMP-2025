@@ -27,5 +27,6 @@
     "**/*.test.tsx",
     "**/*.spec.tsx",
     "src/components/__tests__"
-  ]
+  ],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

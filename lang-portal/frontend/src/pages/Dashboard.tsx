@@ -20,44 +20,64 @@ const Dashboard = () => {
   const [retryCount, setRetryCount] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchStats = async (isManualRefresh = false) => {
-    try {
-      if (isManualRefresh) {
-        setIsRefreshing(true);
-      } else {
-        setLoading(true);
+  const fetchDashboardStats = async (retries = 3) => {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        // Add proper headers and error handling
+        const response = await fetch('/api/dashboard/stats', {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Response not OK:', {
+            status: response.status,
+            statusText: response.statusText,
+            body: errorText
+          });
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new TypeError("Response was not JSON");
+        }
+
+        const data = await response.json();
+        return data;
+
+      } catch (error) {
+        console.error(`Attempt ${attempt}/${retries}: ${error}`);
+        if (attempt === retries) throw error;
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
-      setError(null);
-      
-      const response = await fetch('http://localhost:5000/api/dashboard/stats');
-      
+    }
+  };
+
+  const fetchStats = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/api/dashboard/stats', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
       if (!response.ok) {
         throw new Error('Failed to fetch stats');
       }
-      
+
       const data = await response.json();
-      
-      try {
-        const validatedData = DashboardStatsSchema.parse(data);
-        setStats(validatedData);
-        setRetryCount(0); // Reset retry count on success
-      } catch (validationError) {
-        throw new Error('Invalid data received from server');
-      }
-    } catch (err) {
-      console.error('Error fetching dashboard stats:', err);
-      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
-      
-      if (retryCount < MAX_RETRIES && !isManualRefresh) {
-        setRetryCount(prev => prev + 1);
-        setTimeout(() => fetchStats(), RETRY_DELAY);
-        setError(`Attempt ${retryCount + 1}/${MAX_RETRIES}: ${errorMessage}. Retrying...`);
-      } else {
-        setError(`Failed to load dashboard stats: ${errorMessage}`);
-      }
-    } finally {
-      setLoading(false);
-      setIsRefreshing(false);
+      setStats(data);
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+      setError('Error fetching dashboard data');
     }
   };
 

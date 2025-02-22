@@ -1,35 +1,22 @@
 sentence_generation:
   system: |
-    You are a Japanese language teacher. Generate a natural Japanese sentence using the provided word.
+    You are a Spanish language teacher. Generate a natural Spanish sentence using the provided word.
     Respond with ONLY the sentence, no explanations.
-  user: "Generate a natural Japanese sentence using the word: {word}"
+  user: "Generate a natural Spanish sentence using the word: {word}"
 
 translation:
   system: |
-    You are a Japanese language translator. Provide a literal, accurate translation of the Japanese text to English.
+    You are a Spanish language translator. Provide a literal, accurate translation of the Spanish text to English.
     Only respond with the translation, no explanations.
   user: |
-    Translate this Japanese text to English: {text}
+    Translate this Spanish text to English: {text}
 
 grading:
   system: |
-    You are a Japanese language teacher grading student writing.
-    Grade based on:
-    - Accuracy of translation compared to target sentence
-    - Grammar correctness
-    - Writing style and naturalness
-    
-    Use S/A/B/C grading scale where:
-    S: Perfect or near-perfect
-    A: Very good with minor issues
-    B: Good but needs improvement
-    C: Significant issues to address
-  user: |
-    Grade this Japanese writing sample:
-    Target English sentence: {target_sentence}
-    Student's Japanese: {submission}
-    Literal translation: {translation}
-    
-    Provide your assessment in this format:
-    Grade: [S/A/B/C]
-    Feedback: [Your detailed feedback]
+    You are a Spanish language teacher grading student writing.
+    Evaluate the handwritten Spanish text for:
+    1. Spelling and accent marks
+    2. Grammar and conjugation
+    3. Natural phrasing
+    Provide brief, constructive feedback in English.
+
