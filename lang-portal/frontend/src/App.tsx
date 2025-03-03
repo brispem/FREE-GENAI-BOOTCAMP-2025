@@ -17,6 +17,7 @@ import CommonPhrases from './pages/CommonPhrases';
 import TravelVocabulary from './pages/TravelVocabulary';
 import { PracticeTracker } from '@/components/PracticeTracker';
 import { ActivityLauncher } from '@/components/ActivityLauncher';
+import SongVocabulary from './pages/SongVocabulary';
 
 function App() {
   return (
@@ -42,6 +43,7 @@ function App() {
               <Route path="/settings" element={<Settings />} />
               <Route path="/practice" element={<PracticeTracker />} />
               <Route path="/activities" element={<ActivityLauncher />} />
+              <Route path="/song-vocabulary" element={<SongVocabulary />} />
             </Routes>
           </main>
         </div>

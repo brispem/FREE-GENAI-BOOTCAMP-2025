@@ -1,39 +1,32 @@
-const handleLaunch = async () => {
-  try {
-    console.log(`Launching activity ${activityId}`);
-    
-    const response = await fetch('http://localhost:5000/api/launch-activity', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({ activityId })
-    });
+import { Link } from "react-router-dom";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { LucideIcon } from "lucide-react";
 
-    console.log('Response status:', response.status);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error response:', errorText);
-      throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
-    }
+interface ActivityCardProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  href: string;
+  level: string;
+}
 
-    const data = await response.json();
-    console.log('Launch response:', data);
-    
-    if (!data.success) {
-      throw new Error('Failed to launch activity');
-    }
-
-    // Open activity in new window/tab
-    const port = activityId === '1' ? 8501 : 8081;
-    const url = `http://localhost:${port}`;
-    console.log(`Opening activity at ${url}`);
-    window.open(url, '_blank');
-
-  } catch (error) {
-    console.error('Error launching activity:', error);
-    setError(`Error launching activity: ${error.message}`);
-  }
-}; 
+export function ActivityCard({ title, description, icon, href, level }: ActivityCardProps) {
+  return (
+    <Card className="p-6">
+      <div className="flex items-center mb-4">
+        <div className="text-orange-500 mr-3">{icon}</div>
+        <h2 className="text-xl font-semibold">{title}</h2>
+      </div>
+      <p className="text-muted-foreground mb-6">{description}</p>
+      <div className="flex justify-between items-center">
+        <span className="text-sm text-muted-foreground">{level}</span>
+        <Link to={href}>
+          <Button>
+            Launch
+          </Button>
+        </Link>
+      </div>
+    </Card>
+  );
+} 
