@@ -50,6 +50,12 @@ Our solution leverages multiple AI models and technologies to create an engaging
 - **Natural Pronunciation**: Integrates with text-to-speech for authentic accent reproduction
 - **Context-Aware Translation**: Maintains semantic meaning across language barriers
 
+### 6. Song Vocabulary Agent
+- **Agentic Implementation**: Created an AI agent that autonomously searches for and processes Spanish song lyrics
+- **SerpAPI & DuckDuckGoAPI Integration**: Enables web search capabilities to find authentic Spanish songs and lyrics
+- **Autonomous Decision Making**: Agent determines the most relevant content based on user queries
+- **Structured Output Generation**: Produces formatted vocabulary lists with translations and context
+
 ## Technologies Used
 
 ### AI Models and Services
@@ -60,6 +66,8 @@ Our solution leverages multiple AI models and technologies to create an engaging
 - **Azure AI Studio**: For model fine-tuning and playground experimentation
 - **YouTube Transcript API**: For extracting authentic Spanish content
 - **Vector Embeddings**: For semantic search and contextual learning
+- **SerpAPI & DuckDuckGoAPI**: For web search capabilities in the Song Vocabulary Agent
+- **HuggingFace Models**: Explored and implemented various open-source models
 
 ### Model Fine-Tuning and Optimization
 - **Prompt Engineering**: Carefully crafted prompts in Azure AI Studio playground to ensure consistent outputs
@@ -69,12 +77,20 @@ Our solution leverages multiple AI models and technologies to create an engaging
 - **Performance Benchmarking**: Tested various model configurations to achieve the best balance of accuracy and speed
 
 ### Development Stack
-- **Frontend**: React, TypeScript, Tailwind CSS
+- **Frontend**: React, TypeScript, Tailwind CSS, shadcn/ui, Lucide icons, Sonner toast notifications
 - **Backend**: Flask (Python), Node.js
 - **AI Integration**: OpenAI API, Azure AI SDK
 - **Data Storage**: SQLite, Vector databases
 - **UI Frameworks**: Streamlit, Gradio
-- **Deployment**: Docker, Local development environment
+- **Deployment**: Docker, Azure VM (Ubuntu), Local development environment
+- **Development Tools**: Cursor AI assistant for enhanced coding productivity
+
+### Testing and Quality Assurance
+- **Unit Testing**: Implemented comprehensive test suite for core functionality
+- **Integration Testing**: Verified seamless interaction between different application components
+- **User Acceptance Testing**: Conducted sessions to validate usability and learning effectiveness
+- **Performance Testing**: Optimized response times and resource utilization
+- **Cross-browser Testing**: Ensured compatibility across major web browsers
 
 ## How Our Implementation Meets the Brief
 
@@ -87,6 +103,16 @@ Our solution leverages multiple AI models and technologies to create an engaging
 | Spanish Teaching Assistant | Implemented across all applications with AI-powered feedback and guidance |
 | RAG Implementation | Utilized in the Listening Practice app to extract content and enable contextual questioning |
 | Translation Services | Custom implementation using Azure AI Foundry with fine-tuned models |
+| AI Agents | Implemented in Song Vocabulary tool with autonomous web search and content processing |
+
+## Learning Journey
+Throughout this 6-week bootcamp, we gained extensive AI engineering experience through:
+- Over 40 hours of content from ExamProCo library provided by Andrew Brown and guests
+- Hands-on experience with OpenAI models and Azure AI services
+- Deployment of chat QnA on Ubuntu VM via Azure
+- Exploration of HuggingFace models and integration techniques
+- Frontend development skills with React, shadcn/ui, and modern UI components
+- AI-assisted development using Cursor as a coding assistant
 
 ## Future Enhancements
 
