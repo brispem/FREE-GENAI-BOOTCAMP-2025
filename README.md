@@ -113,6 +113,7 @@ Throughout this 6-week bootcamp, we gained extensive AI engineering experience t
 - Exploration of HuggingFace models and integration techniques
 - Frontend development skills with React, shadcn/ui, and modern UI components
 - AI-assisted development using Cursor as a coding assistant
+- Version control with Git and GitHub repositories for collaborative development and code management
 
 ## Future Enhancements
 
