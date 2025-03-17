@@ -19,4 +19,8 @@ CREATE TABLE IF NOT EXISTS session_words (
     attempted_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (session_id) REFERENCES study_sessions(id),
     FOREIGN KEY (word_id) REFERENCES words(id)
-); 
+);
+
+-- Add if not already present
+ALTER TABLE words ADD COLUMN type VARCHAR(50);
+ALTER TABLE words ADD COLUMN audio_url TEXT; 

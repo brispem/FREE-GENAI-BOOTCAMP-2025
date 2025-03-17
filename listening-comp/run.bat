@@ -1,3 +1,3 @@
 @echo off
-cd frontend
-python -m streamlit run main.py 
+cd %~dp0
+streamlit run frontend/main.py 

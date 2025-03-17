@@ -20,7 +20,7 @@ const activities: Activity[] = [
     description: 'Improve your Spanish listening comprehension with native audio',
     difficulty: 'Beginner',
     icon: '🎧',
-    command: 'streamlit run main.py',
+    command: 'streamlit run frontend/main.py',
     port: 8501
   },
   {

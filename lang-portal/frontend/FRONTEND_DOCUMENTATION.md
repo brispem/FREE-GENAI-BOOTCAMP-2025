@@ -1,5 +1,130 @@
 # Frontend Documentation
-Last Updated: March 2024
+
+## Overview
+
+The Spanish Language Learning Portal frontend is built with React, TypeScript, and Tailwind CSS. It provides an interactive interface for language learners to practice Spanish through various activities, manage vocabulary, and track progress.
+
+## Architecture
+
+The frontend follows a component-based architecture with the following structure:
+
+- **Pages**: Main views of the application
+- **Components**: Reusable UI elements
+- **Hooks**: Custom React hooks for shared functionality
+- **Lib**: Utility functions and API clients
+- **Types**: TypeScript type definitions
+- **Styles**: Global CSS and Tailwind configuration
+
+## Key Features
+
+### Navigation
+
+The main navigation component (`Navigation.tsx`) provides access to all sections of the application:
+- Dashboard
+- Spanish History
+- Study Activities
+- Words
+- Word Groups
+- Sessions
+- Settings
+
+### Study Activities
+
+The portal includes several interactive study activities:
+
+#### Listening Practice
+- Integration with a Streamlit-based application
+- Runs on port 8501
+- Provides Spanish audio comprehension exercises
+- Uses YouTube transcripts and Azure Text-to-Speech
+
+#### Writing Practice
+- Integration with a Gradio-based application
+- Runs on port 8081
+- Allows practice of Spanish writing with AI feedback
+- Uses OpenAI for handwriting analysis
+
+#### Flashcards
+- Built directly into the React frontend
+- Text-based mode for typing translations
+- Image-based mode with AI-generated visuals from OpenAI
+- Multiple-choice options and score tracking
+
+### Vocabulary Management
+
+The Words and Word Groups sections allow users to:
+- View and manage Spanish vocabulary
+- Create custom groups of related words
+- Track learning progress for each word
+- Practice with specific word sets
+
+## Component Structure
+
+### Pages
+
+- `Dashboard.tsx`: Home page with overview and quick access
+- `StudyActivities.tsx`: List of available learning activities
+- `Words.tsx`: Vocabulary management
+- `Groups.tsx`: Word group management
+- `SpanishHistory.tsx`: Cultural and historical content
+- `Settings.tsx`: User preferences
+- `ListeningPractice.tsx`: Redirects to the Streamlit app
+- `WritingPractice.tsx`: Redirects to the Gradio app
+- `Flashcards.tsx`: Interactive flashcard interface
+
+### Key Components
+
+- `Navigation.tsx`: Main navigation bar
+- `ActivityCard.tsx`: Card component for study activities
+- `ActivityLauncher.tsx`: Handles launching external activities
+- `PracticeTracker.tsx`: Tracks and displays learning progress
+- `WordList.tsx`: Displays vocabulary items
+- `Breadcrumbs.tsx`: Navigation breadcrumbs
+
+## State Management
+
+The application uses React's built-in state management with:
+- `useState` for component-level state
+- `useContext` for theme and user preferences
+- Custom hooks for shared functionality
+
+## API Integration
+
+The frontend communicates with several backend services:
+- Main Flask backend on port 5174
+- Streamlit listening practice on port 8501
+- Gradio writing practice on port 8081
+
+API calls are made using the Fetch API with helper functions in `lib/api.ts`.
+
+## External Integrations
+
+- **OpenAI**: Used for image generation in flashcards
+- **Azure Cognitive Services**: Used for translation and text-to-speech
+
+## Styling
+
+The application uses:
+- Tailwind CSS for utility-based styling
+- Custom components from shadcn/ui
+- CSS variables for theming
+- Dark/light mode support
+
+## Getting Started for Developers
+
+1. Install dependencies:
+   ```
+   npm install
+   ```
+
+2. Start the development server:
+   ```
+   npm run dev
+   ```
+
+3. Access the application at `http://localhost:5173`
+
+## Building for Production
 
 ## Project History
 

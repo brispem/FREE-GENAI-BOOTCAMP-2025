@@ -6,6 +6,21 @@ import { ActivityCard } from '@/components/ActivityCard';
 import { MusicIcon } from 'lucide-react';
 
 const StudyActivities: React.FC = () => {
+  const fetchFlashcards = async () => {
+    const response = await fetch('http://localhost:5174/api/flashcards');
+    // ... rest of the function
+  };
+
+  const fetchWritingPractice = async () => {
+    const response = await fetch('http://localhost:5174/api/writing-practice');
+    // ... rest of the function
+  };
+
+  const fetchListeningPractice = async () => {
+    const response = await fetch('http://localhost:5174/api/listening-practice');
+    // ... rest of the function
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center mb-4">Study Activities</h1>

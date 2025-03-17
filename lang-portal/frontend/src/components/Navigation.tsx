@@ -11,7 +11,6 @@ const navigation = [
   { name: 'Word Groups', href: '/groups', icon: FolderOpen },
   { name: 'Sessions', href: '/sessions', icon: History },
   { name: 'Settings', href: '/settings', icon: Settings },
-  { name: 'Vocabulary 📚', href: '/vocabulary', icon: BookText },
 ];
 
 export default function Navigation() {

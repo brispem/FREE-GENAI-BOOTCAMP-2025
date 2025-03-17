@@ -4,80 +4,46 @@ import { useEffect, useState } from 'react';
 import { DashboardStats, DashboardStatsSchema } from '@/lib/validations/dashboard';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 2000; // 2 seconds
 
 const Dashboard = () => {
-  const [stats, setStats] = useState({
-    study_sessions: 0,
-    words_learned: 0,
-    active_groups: 0,
-    success_rate: 0
-  });
+  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [retryCount, setRetryCount] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchDashboardStats = async (retries = 3) => {
-    for (let attempt = 1; attempt <= retries; attempt++) {
-      try {
-        // Add proper headers and error handling
-        const response = await fetch('/api/dashboard/stats', {
-          method: 'GET',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-          },
-          credentials: 'include'
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('Response not OK:', {
-            status: response.status,
-            statusText: response.statusText,
-            body: errorText
-          });
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          throw new TypeError("Response was not JSON");
-        }
-
-        const data = await response.json();
-        return data;
-
-      } catch (error) {
-        console.error(`Attempt ${attempt}/${retries}: ${error}`);
-        if (attempt === retries) throw error;
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      }
-    }
-  };
-
   const fetchStats = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/dashboard/stats', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-
+      setLoading(true);
+      setError(null);
+      
+      console.log('Fetching dashboard stats...');
+      
+      const response = await fetch('http://localhost:5174/api/dashboard/stats');
+      console.log('Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Failed to fetch stats');
+        const errorText = await response.text();
+        console.error('Error response:', errorText);
+        throw new Error(`Failed to fetch dashboard data: ${response.status} ${response.statusText}`);
       }
 
       const data = await response.json();
-      setStats(data);
-      setError(null);
-    } catch (error) {
-      console.error('Error fetching stats:', error);
-      setError('Error fetching dashboard data');
+      console.log('Dashboard data received:', data);
+      
+      // Validate the response data
+      const validatedData = DashboardStatsSchema.parse(data);
+      setStats(validatedData);
+      
+    } catch (err) {
+      console.error('Error in dashboard fetch:', err);
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -124,24 +90,22 @@ const Dashboard = () => {
         {/* Quick Stats */}
         <div className="grid md:grid-cols-4 gap-6">
           {[
-            { label: "Study Sessions", value: stats.study_sessions, icon: History, color: "from-[#AA151B]" },
-            { label: "Words Learned", value: stats.words_learned, icon: BookOpen, color: "from-[#F1BF00]" },
-            { label: "Active Groups", value: stats.active_groups, icon: Users, color: "from-[#AA151B]" },
-            { label: "Success Rate", value: `${stats.success_rate}%`, icon: ChartBar, color: "from-[#F1BF00]" },
+            { label: "Study Sessions", value: stats?.study_sessions, icon: History, color: "from-[#AA151B]" },
+            { label: "Words Learned", value: stats?.words_learned, icon: BookOpen, color: "from-[#F1BF00]" },
+            { label: "Active Groups", value: stats?.active_groups, icon: Users, color: "from-[#AA151B]" },
+            { label: "Success Rate", value: stats?.success_rate ? `${stats.success_rate}%` : '0%', icon: ChartBar, color: "from-[#F1BF00]" },
           ].map(({ label, value, icon: Icon, color }) => (
-            <div key={label} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 text-center hover:shadow-lg transition-all duration-300">
+            <Card key={label} className="p-6 flex flex-col items-center">
               {loading ? (
-                <Loader2 className="h-8 w-8 mx-auto animate-spin text-[#AA151B]" />
+                <Loader2 className="h-8 w-8 animate-spin text-[#AA151B]" />
               ) : (
                 <>
-                  <Icon className="h-8 w-8 mx-auto mb-4 text-[#AA151B]" />
-                  <div className={`text-2xl font-bold bg-gradient-to-r ${color} to-transparent bg-clip-text text-transparent`}>
-                    {value}
-                  </div>
+                  <Icon className={`h-8 w-8 mb-2 bg-gradient-to-r ${color} to-transparent bg-clip-text`} />
+                  <h3 className="text-3xl font-bold mb-2">{value || 0}</h3>
+                  <p className="text-gray-600 dark:text-gray-300">{label}</p>
                 </>
               )}
-              <p className="text-gray-600 dark:text-gray-300">{label}</p>
-            </div>
+            </Card>
           ))}
         </div>
 

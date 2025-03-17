@@ -8,7 +8,7 @@ import os
 import dotenv
 import yaml
 import base64
-from config import OPENAI_API_KEY
+from config import PORT, OPENAI_API_KEY
 from dotenv import load_dotenv
 from datetime import datetime
 
@@ -94,6 +94,26 @@ def get_shared_styles():
         .input-box {
             border-radius: 0.5rem !important;
             border: 1px solid rgba(170, 21, 27, 0.2) !important;
+        }
+
+        /* Return button styling */
+        .return-button {
+            position: fixed !important;
+            top: 1rem !important;
+            left: 1rem !important;
+            background: linear-gradient(90deg, #AA151B, #F1BF00) !important;
+            color: white !important;
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.5rem !important;
+            text-decoration: none !important;
+            font-weight: 500 !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+            z-index: 1000 !important;
+        }
+        
+        .return-button:hover {
+            opacity: 0.9 !important;
+            transform: translateY(-1px) !important;
         }
     </style>
     """
@@ -354,8 +374,59 @@ def create_ui():
                 font-size: 1rem !important;
                 line-height: 1.5 !important;
             }
+
+            /* Fixed navigation bar */
+            .nav-bar {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                background: white !important;
+                padding: 1rem !important;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+                z-index: 1000 !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+            }
+
+            .nav-links {
+                display: flex !important;
+                gap: 1rem !important;
+            }
+
+            .nav-link {
+                display: inline-block !important;
+                background: linear-gradient(90deg, #AA151B, #F1BF00) !important;
+                color: white !important;
+                padding: 0.5rem 1rem !important;
+                border-radius: 0.5rem !important;
+                text-decoration: none !important;
+                font-weight: 500 !important;
+                transition: all 0.2s ease !important;
+            }
+
+            .nav-link:hover {
+                opacity: 0.9 !important;
+                transform: translateY(-1px) !important;
+            }
+
+            /* Adjust content to account for fixed nav */
+            .content-wrapper {
+                margin-top: 5rem !important;
+            }
         """
     ) as interface:
+        # Add navigation bar at the top
+        gr.HTML('''
+            <div class="nav-bar">
+                <div class="nav-links">
+                    <a href="http://localhost:5173" class="nav-link">← Return to Fluency Portal</a>
+                    <a href="http://localhost:5173/study-activities" class="nav-link">← Back to Study Activities</a>
+                </div>
+            </div>
+        ''')
+        
         with gr.Column(elem_classes="content-wrapper"):
             gr.HTML('<h1>Spanish Writing Practice</h1>')
             gr.HTML('<p class="subtitle">Practice writing Spanish sentences and get instant feedback</p>')

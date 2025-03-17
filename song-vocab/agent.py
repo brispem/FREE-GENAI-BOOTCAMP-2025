@@ -252,14 +252,14 @@ class SongLyricsAgent:
                 
                 # Parse tool call
                 action = self.parse_tool_call(assistant_message)
-                if not action:
+                    if not action:
                     logger.warning("No tool call found in response")
                     conversation.append({"role": "assistant", "content": assistant_message})
                     conversation.append({
                         "role": "user", 
                         "content": "Please use one of the available tools to proceed. Format your response as Tool: tool_name(arg1=\"value1\", arg2=\"value2\")"
                     })
-                    continue
+                            continue
                 
                 # Execute the tool
                 tool_name, tool_args = action

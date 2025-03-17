@@ -18,36 +18,40 @@ import TravelVocabulary from './pages/TravelVocabulary';
 import { PracticeTracker } from '@/components/PracticeTracker';
 import { ActivityLauncher } from '@/components/ActivityLauncher';
 import SongVocabulary from './pages/SongVocabulary';
+import ListeningPractice from './pages/ListeningPractice';
+import WritingPractice from './pages/WritingPractice';
+import Flashcards from '@/pages/Flashcards';
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="light">
+    <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
       <Router>
-        <div className="min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+        <div className="min-h-screen bg-background">
           <Navigation />
-          <main className="container mx-auto px-4 py-6">
-            <Breadcrumbs />
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/history" element={<SpanishHistory />} />
-              <Route path="/study-activities" element={<StudyActivities />} />
-              <Route path="/study-activities/:id" element={<StudyActivity />} />
-              <Route path="/words" element={<Words />} />
-              <Route path="/words/:id" element={<Word />} />
-              <Route path="/groups" element={<Groups />} />
-              <Route path="/groups/core-verbs" element={<Group />} />
-              <Route path="/groups/common-phrases" element={<CommonPhrases />} />
-              <Route path="/groups/travel-vocabulary" element={<TravelVocabulary />} />
-              <Route path="/sessions" element={<Sessions />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/practice" element={<PracticeTracker />} />
-              <Route path="/activities" element={<ActivityLauncher />} />
-              <Route path="/song-vocabulary" element={<SongVocabulary />} />
-            </Routes>
-          </main>
+          <Breadcrumbs />
+          <Routes>
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/history" element={<SpanishHistory />} />
+            <Route path="/study-activities" element={<StudyActivities />} />
+            <Route path="/study-activities/:id" element={<StudyActivity />} />
+            <Route path="/words" element={<Words />} />
+            <Route path="/words/:id" element={<Word />} />
+            <Route path="/groups" element={<Groups />} />
+            <Route path="/groups/core-verbs" element={<Group />} />
+            <Route path="/groups/common-phrases" element={<CommonPhrases />} />
+            <Route path="/groups/travel-vocabulary" element={<TravelVocabulary />} />
+            <Route path="/sessions" element={<Sessions />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/practice" element={<PracticeTracker />} />
+            <Route path="/activities" element={<ActivityLauncher />} />
+            <Route path="/song-vocabulary" element={<SongVocabulary />} />
+            <Route path="/listening-practice" element={<ListeningPractice />} />
+            <Route path="/writing-practice" element={<WritingPractice />} />
+            <Route path="/flashcards" element={<Flashcards />} />
+          </Routes>
+          <Toaster />
         </div>
-        <Toaster />
       </Router>
     </ThemeProvider>
   );

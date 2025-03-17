@@ -1,6 +1,9 @@
-from flask import Flask, g
+from flask import Flask, g, request, jsonify
 from flask_cors import CORS
 import sqlite3
+import os
+from dotenv import load_dotenv
+from openai import OpenAI  # Updated import
 
 from lib.db import Db
 
@@ -9,6 +12,17 @@ import routes.groups
 import routes.study_sessions as study_sessions
 import routes.dashboard
 import routes.study_activities
+from routes.activities import activities  # Add this import
+
+load_dotenv()
+openai_api_key = os.getenv('OPENAI_API_KEY')
+if not openai_api_key:
+    print("WARNING: OpenAI API key not found in environment variables")
+else:
+    print("OpenAI API key loaded successfully")
+
+# Initialize the client
+client = OpenAI(api_key=openai_api_key)  # New way to initialize
 
 def get_allowed_origins(app):
     try:
@@ -51,14 +65,15 @@ def create_app(test_config=None):
     
     # Configure CORS with combined origins
     CORS(app, resources={
-        r"/*": {
-            "origins": allowed_origins,
+        r"/api/*": {
+            "origins": ["http://localhost:5173", "http://localhost:5174"],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"],
-            "expose_headers": ["Access-Control-Allow-Origin", "Access-Control-Allow-Methods"],
-            "automatic_options": True
+            "allow_headers": ["Content-Type"]
         }
     })
+
+    # Register the activities blueprint
+    app.register_blueprint(activities)
 
     # Close database connection
     @app.teardown_appcontext
@@ -72,9 +87,51 @@ def create_app(test_config=None):
     routes.dashboard.load(app)
     routes.study_activities.load(app)
     
+    @app.route('/api/generate-image', methods=['POST'])
+    def generate_image():
+        if not openai_api_key:
+            return jsonify({
+                'success': False,
+                'error': 'OpenAI API key not configured'
+            }), 500
+        
+        try:
+            data = request.json
+            location = data.get('location')
+            print(f"Generating image for location: {location}")
+            
+            prompt = f"A simple, clear illustration of a typical Spanish {location} with Spanish signage and architecture, minimalist style"
+            
+            # Updated API call format
+            response = client.images.generate(
+                model="dall-e-2",  # or "dall-e-3" for higher quality
+                prompt=prompt,
+                n=1,
+                size="512x512"
+            )
+            
+            image_url = response.data[0].url
+            print(f"Image generated successfully: {image_url[:30]}...")
+            
+            return jsonify({
+                'success': True,
+                'imageUrl': image_url
+            })
+        except Exception as e:
+            print(f"Error generating image: {str(e)}")
+            return jsonify({
+                'success': False,
+                'error': str(e)
+            }), 500
+
+    # Add a simple test route
+    @app.route('/api/test', methods=['GET'])
+    def test():
+        return jsonify({'status': 'ok', 'message': 'Flask server is running'})
+
     return app
 
 app = create_app()
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(port=5174, debug=True)

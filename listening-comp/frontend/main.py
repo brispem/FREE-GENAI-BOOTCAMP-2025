@@ -32,8 +32,62 @@ st.set_page_config(
     page_title="Spanish Listening Practice",
     page_icon="🎧",
     layout="wide",
-    initial_sidebar_state="collapsed"
+    initial_sidebar_state="collapsed",
+    menu_items=None
 )
+
+# Then update the navigation code with proper positioning
+st.markdown('''
+    <div style="
+        position: relative;
+        text-align: left; 
+        padding: 0.5rem;
+        padding-left: 1rem;
+        background-color: white;
+        margin-top: 0;
+        margin-bottom: 1rem;
+    ">
+        <a href="http://localhost:5173" 
+           style="
+               display: inline-block;
+               background: linear-gradient(90deg, #AA151B, #F1BF00);
+               color: white;
+               padding: 0.3rem 0.75rem;
+               border-radius: 0.25rem;
+               text-decoration: none;
+               font-weight: 500;
+               margin-right: 0.5rem;
+               font-size: 0.85rem;
+           ">
+            ← Return to Fluency Portal
+        </a>
+        <a href="http://localhost:5173/study-activities" 
+           style="
+               display: inline-block;
+               background: linear-gradient(90deg, #AA151B, #F1BF00);
+               color: white;
+               padding: 0.3rem 0.75rem;
+               border-radius: 0.25rem;
+               text-decoration: none;
+               font-weight: 500;
+               font-size: 0.85rem;
+           ">
+            ← Back to Study Activities
+        </a>
+    </div>
+''', unsafe_allow_html=True)
+
+# Add this CSS to remove any extra padding at the top
+st.markdown('''
+    <style>
+        .block-container {
+            padding-top: 0 !important;
+        }
+        header {
+            visibility: hidden;
+        }
+    </style>
+''', unsafe_allow_html=True)
 
 # Embed styles directly
 st.markdown("""

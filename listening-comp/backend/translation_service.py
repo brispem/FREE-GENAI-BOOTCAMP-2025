@@ -8,7 +8,7 @@ class TranslationService:
         """Initialize Azure Translator service"""
         self.key = os.getenv("TRANSLATOR_TEXT_RESOURCE_KEY")
         self.region = os.getenv("TRANSLATOR_TEXT_REGION")
-        self.endpoint = "https://ai-bemans7335ai360684425821.cognitiveservices.azure.com/"
+        self.endpoint = os.getenv("AZURE_COGNITIVE_SERVICES_ENDPOINT", "https://api.cognitive.microsofttranslator.com/")
         
         if not all([self.key, self.region, self.endpoint]):
             raise Exception("Missing Azure Translator credentials in environment variables")
