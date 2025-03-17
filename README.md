@@ -25,7 +25,7 @@ Our solution leverages multiple AI models and technologies to create an engaging
 - **Progress Tracking**: Uses SQLite to store user progress and adapt difficulty levels
 
 ### 2. Writing Practice Application
-- **OpenAI GPT-4o Integration**: Analyzes handwritten Spanish translations
+- **OpenAI GPT-4o Integration**: Analyses handwritten Spanish translations
 - **Computer Vision**: Processes uploaded images of handwritten text
 - **Intelligent Feedback Generation**: Provides detailed grammar, vocabulary, and style feedback
 - **Adaptive Learning**: Adjusts difficulty based on user performance
@@ -33,19 +33,19 @@ Our solution leverages multiple AI models and technologies to create an engaging
 
 ### 3. Flashcards Application
 - **OpenAI DALL-E Integration**: Generates custom images for location-based vocabulary
-- **Spaced Repetition Algorithm**: Optimizes learning retention through intelligent card sequencing
+- **Spaced Repetition Algorithm**: Optimises learning retention through intelligent card sequencing
 - **Multi-modal Learning**: Combines text and image-based learning approaches
 - **Interactive Assessment**: Provides immediate feedback with visual reinforcement
 
 ### 4. Spanish Language Portal
-- **Centralized Learning Hub**: Integrates all AI applications into a cohesive learning experience
-- **Progress Analytics**: Tracks and visualizes learning progress across all activities
-- **Vocabulary Management**: AI-assisted organization and categorization of Spanish vocabulary
-- **Personalized Learning Paths**: Adapts content based on user performance and preferences
+- **Centralised Learning Hub**: Integrates all AI applications into a cohesive learning experience
+- **Progress Analytics**: Tracks and visualises learning progress across all activities
+- **Vocabulary Management**: AI-assisted organisation and categorisation of Spanish vocabulary
+- **Personalised Learning Paths**: Adapts content based on user performance and preferences
 
 ### 5. Azure AI Foundry Translation Service
 - **Custom Translator Implementation**: Built using Azure AI Foundry's text-to-speech models
-- **Model Fine-tuning**: Utilized Azure AI Studio playground to fine-tune translation models
+- **Model Fine-tuning**: Utilised Azure AI Studio playground to fine-tune translation models
 - **Bilingual Capabilities**: Supports translation between English and Spanish with high accuracy
 - **Natural Pronunciation**: Integrates with text-to-speech for authentic accent reproduction
 - **Context-Aware Translation**: Maintains semantic meaning across language barriers
@@ -69,11 +69,11 @@ Our solution leverages multiple AI models and technologies to create an engaging
 - **SerpAPI & DuckDuckGoAPI**: For web search capabilities in the Song Vocabulary Agent
 - **HuggingFace Models**: Explored and implemented various open-source models
 
-### Model Fine-Tuning and Optimization
+### Model Fine-Tuning and Optimisation
 - **Prompt Engineering**: Carefully crafted prompts in Azure AI Studio playground to ensure consistent outputs
-- **Parameter Optimization**: Fine-tuned model parameters for optimal performance in language learning contexts
-- **Output Formatting**: Standardized response formats for seamless integration with the learning platform
-- **Context Window Management**: Optimized context handling for maintaining conversation history
+- **Parameter Optimisation**: Fine-tuned model parameters for optimal performance in language learning contexts
+- **Output Formatting**: Standardised response formats for seamless integration with the learning platform
+- **Context Window Management**: Optimised context handling for maintaining conversation history
 - **Performance Benchmarking**: Tested various model configurations to achieve the best balance of accuracy and speed
 
 ### Development Stack
@@ -89,7 +89,7 @@ Our solution leverages multiple AI models and technologies to create an engaging
 - **Unit Testing**: Implemented comprehensive test suite for core functionality
 - **Integration Testing**: Verified seamless interaction between different application components
 - **User Acceptance Testing**: Conducted sessions to validate usability and learning effectiveness
-- **Performance Testing**: Optimized response times and resource utilization
+- **Performance Testing**: Optimised response times and resource utilisation
 - **Cross-browser Testing**: Ensured compatibility across major web browsers
 
 ## How Our Implementation Meets the Brief
@@ -101,7 +101,7 @@ Our solution leverages multiple AI models and technologies to create an engaging
 | Subtitles to Vocabulary | Integrated in Listening Practice with YouTube transcript extraction and vocabulary building |
 | Speech to Learn | Implemented through Azure TTS in the Listening Practice application |
 | Spanish Teaching Assistant | Implemented across all applications with AI-powered feedback and guidance |
-| RAG Implementation | Utilized in the Listening Practice app to extract content and enable contextual questioning |
+| RAG Implementation | Utilised in the Listening Practice app to extract content and enable contextual questioning |
 | Translation Services | Custom implementation using Azure AI Foundry with fine-tuned models |
 | AI Agents | Implemented in Song Vocabulary tool with autonomous web search and content processing |
 
@@ -126,7 +126,7 @@ In future iterations, we plan to extend the platform with:
 5. **Advanced Analytics Dashboard**: Provide deeper insights into learning patterns and progress
 6. **Community Features**: Add collaborative learning and peer review capabilities
 7. **Offline Mode**: Enable learning without internet connectivity
-8. **Advanced ASR Implementation**: Integrate optimized speech recognition for real-time conversation practice
+8. **Advanced ASR Implementation**: Integrate optimised speech recognition for real-time conversation practice
 
 ## Getting Started
 
@@ -177,6 +177,6 @@ In future iterations, we plan to extend the platform with:
 
 Our implementation demonstrates the effective use of various AI models and technologies to create an engaging, interactive Spanish language learning experience. By leveraging cutting-edge AI capabilities including natural language processing, computer vision, text-to-speech, and generative AI, we've successfully built a comprehensive solution that meets and exceeds the requirements of the bootcamp brief.
 
-The extensive use of Azure AI Foundry and model fine-tuning in the Azure AI Studio playground has allowed us to create highly optimized, context-aware language learning tools that provide a personalized and effective learning experience. Our approach to model optimization ensures consistent outputs that are perfectly tailored to language learning scenarios.
+The extensive use of Azure AI Foundry and model fine-tuning in the Azure AI Studio playground has allowed us to create highly optimised, context-aware language learning tools that provide a personalised and effective learning experience. Our approach to model optimisation ensures consistent outputs that are perfectly tailored to language learning scenarios.
 
 The modular architecture allows for easy extension to support additional languages and features in the future, making this a scalable solution for the Spanish Language Learning School's needs.
