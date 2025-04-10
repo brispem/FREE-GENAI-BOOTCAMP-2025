@@ -25,3 +25,6 @@ streamlit_app.log
 
 # cursor rules
 .cursor/
+
+# Videos
+Videos/
