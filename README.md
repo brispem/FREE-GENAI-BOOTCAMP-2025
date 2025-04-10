@@ -75,21 +75,12 @@ The Flask backend (Port 5174) provides:
    # SerpAPI Configuration (for Song Vocabulary)
    SERP_API_KEY=your_serp_api_key
 
-3. Port Configuration
-   ```
-   WRITING_PRACTICE_PORT=8081
-   FLUENCY_FC_PORT=8008
-   LISTENING_COMP_PORT=8501
-   MAIN_FRONTEND_PORT=5173
-   MAIN_BACKEND_PORT=5174
-   ```
-
-4. Start all services with Docker Compose:
+3. Start all services with Docker Compose:
    ```bash
    docker-compose up
    ```
 
-5. Access the main portal at `http://localhost:5173`
+4. Access the main portal at `http://localhost:5173`
 
 ### Running Individual Components
 
@@ -131,6 +122,14 @@ cd listening-comp
 streamlit run frontend/main.py
 ```
 
+Port Configuration
+   ```
+   WRITING_PRACTICE_PORT=8081
+   FLUENCY_FC_PORT=8008
+   LISTENING_COMP_PORT=8501
+   MAIN_FRONTEND_PORT=5173
+   MAIN_BACKEND_PORT=5174
+   ```
 
 ## AI Integration
 
