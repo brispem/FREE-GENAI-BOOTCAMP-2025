@@ -1,0 +1,68 @@
+services:
+  # Main Portal Frontend
+  frontend:
+    build:
+      context: ./lang-portal/frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - REACT_APP_API_URL=http://localhost:5174
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  # Main Portal Backend
+  backend:
+    build:
+      context: .
+      dockerfile: lang-portal/backend-flask/Dockerfile
+    ports:
+      - "5174:5174"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - SERP_API_KEY=${SERP_API_KEY}
+    networks:
+      - app-network
+
+  # Fluency FC Game
+  fluency-fc:
+    build:
+      context: ./Fluency-FC
+      dockerfile: Dockerfile
+    ports:
+      - "8008:8008"
+    networks:
+      - app-network
+
+  # Writing Practice
+  writing-practice:
+    build:
+      context: ./writing-practice
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    networks:
+      - app-network
+
+  # Listening Comprehension
+  listening-comp:
+    build:
+      context: ./listening-comp
+      dockerfile: Dockerfile
+    ports:
+      - "8501:8501"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db_data: 

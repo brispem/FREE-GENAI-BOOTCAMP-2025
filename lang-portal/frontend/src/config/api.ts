@@ -1,12 +1,13 @@
 // API configuration
 export const API_CONFIG = {
-  BASE_URL: 'http://localhost:3001',
+  BASE_URL: 'http://localhost:5174',
   ENDPOINTS: {
     DASHBOARD: '/api/dashboard',
     STUDY_SESSIONS: '/api/study-sessions',
     WORDS: '/api/words',
     GROUPS: '/api/groups',
-    ACTIVITIES: '/api/activities'
+    ACTIVITIES: '/api/activities',
+    PROGRESS: '/api/progress'
   }
 };
 

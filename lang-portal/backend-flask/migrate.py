@@ -18,42 +18,45 @@ def has_migration_run(conn, migration_name):
 
 def run_migrations():
     try:
-        # Remove existing database
-        if os.path.exists('word_bank.db'):
-            os.remove('word_bank.db')
-            
-        conn = sqlite3.connect('word_bank.db')
+        conn = sqlite3.connect('database.db')
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
         # Enable foreign keys
         cursor.execute('PRAGMA foreign_keys = ON')
+        
+        # Create migrations table
+        create_migrations_table(conn)
 
         # Run migrations in order
         migrations = [
             '001_create_tables.sql',
             '002_create_study_sessions.sql',
-            '003_create_word_review_items.sql'
+            '003_create_word_review_items.sql',
+            '004_add_session_status.sql'
         ]
 
         for migration in migrations:
-            with open(f'sql/migrations/{migration}', 'r') as f:
-                cursor.executescript(f.read())
-                print(f"Executed migration: {migration}")
+            if not has_migration_run(conn, migration):
+                print(f"Running migration: {migration}")
+                with open(f'sql/migrations/{migration}', 'r') as f:
+                    cursor.executescript(f.read())
+                cursor.execute("INSERT INTO migrations (migration_name) VALUES (?)", (migration,))
+                conn.commit()
+                print(f"Completed migration: {migration}")
+            else:
+                print(f"Skipping already applied migration: {migration}")
 
-        # Insert test data
-        cursor.execute("INSERT OR IGNORE INTO groups (id, name) VALUES (1, 'Test Group')")
-        cursor.execute("INSERT OR IGNORE INTO study_activities (id, name, url) VALUES (1, 'Flashcards', 'http://localhost:8080')")
-        
-        conn.commit()
-        print("Migrations completed successfully")
+        print("All migrations completed successfully")
         
     except Exception as e:
         print(f"Error running migrations: {str(e)}")
-        conn.rollback()
+        if conn:
+            conn.rollback()
         raise
     finally:
-        conn.close()
+        if conn:
+            conn.close()
 
 if __name__ == '__main__':
     run_migrations()

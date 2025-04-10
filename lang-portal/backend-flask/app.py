@@ -3,7 +3,8 @@ from flask_cors import CORS
 import sqlite3
 import os
 from dotenv import load_dotenv
-from openai import OpenAI  # Updated import
+from openai import OpenAI
+from pathlib import Path
 
 from lib.db import Db
 
@@ -12,17 +13,17 @@ import routes.groups
 import routes.study_sessions as study_sessions
 import routes.dashboard
 import routes.study_activities
-from routes.activities import activities  # Add this import
+import routes.song_vocabulary
+from routes.activities import activities
+from routes.audio import audio
 
-load_dotenv()
+# Load environment variables from root directory
+root_dir = Path(__file__).resolve().parent.parent.parent
+env_path = root_dir / '.env'
+load_dotenv(dotenv_path=env_path)
+
+# Get API key
 openai_api_key = os.getenv('OPENAI_API_KEY')
-if not openai_api_key:
-    print("WARNING: OpenAI API key not found in environment variables")
-else:
-    print("OpenAI API key loaded successfully")
-
-# Initialize the client
-client = OpenAI(api_key=openai_api_key)  # New way to initialize
 
 def get_allowed_origins(app):
     try:
@@ -48,10 +49,13 @@ def create_app(test_config=None):
     
     if test_config is None:
         app.config.from_mapping(
-            DATABASE='word_bank.db'
+            DATABASE='database.db'
         )
     else:
         app.config.update(test_config)
+    
+    # Initialize OpenAI client with explicit API key
+    app.openai_client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
     
     # Initialize database first since we need it for CORS configuration
     app.db = Db(database=app.config['DATABASE'])
@@ -65,73 +69,36 @@ def create_app(test_config=None):
     
     # Configure CORS with combined origins
     CORS(app, resources={
-        r"/api/*": {
+        r"/*": {  # Change from /api/* to /* to allow all routes
             "origins": ["http://localhost:5173", "http://localhost:5174"],
             "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
             "allow_headers": ["Content-Type"]
         }
     })
 
-    # Register the activities blueprint
+    # Register the blueprints
     app.register_blueprint(activities)
+    app.register_blueprint(audio)
 
     # Close database connection
     @app.teardown_appcontext
     def close_db(exception):
         app.db.close()
 
-    # load routes -----------
+    # load routes
     routes.words.load(app)
     routes.groups.load(app)
     study_sessions.load(app)
     routes.dashboard.load(app)
     routes.study_activities.load(app)
-    
-    @app.route('/api/generate-image', methods=['POST'])
-    def generate_image():
-        if not openai_api_key:
-            return jsonify({
-                'success': False,
-                'error': 'OpenAI API key not configured'
-            }), 500
-        
-        try:
-            data = request.json
-            location = data.get('location')
-            print(f"Generating image for location: {location}")
-            
-            prompt = f"A simple, clear illustration of a typical Spanish {location} with Spanish signage and architecture, minimalist style"
-            
-            # Updated API call format
-            response = client.images.generate(
-                model="dall-e-2",  # or "dall-e-3" for higher quality
-                prompt=prompt,
-                n=1,
-                size="512x512"
-            )
-            
-            image_url = response.data[0].url
-            print(f"Image generated successfully: {image_url[:30]}...")
-            
-            return jsonify({
-                'success': True,
-                'imageUrl': image_url
-            })
-        except Exception as e:
-            print(f"Error generating image: {str(e)}")
-            return jsonify({
-                'success': False,
-                'error': str(e)
-            }), 500
+    routes.song_vocabulary.load(app)
 
-    # Add a simple test route
     @app.route('/api/test', methods=['GET'])
     def test():
         return jsonify({'status': 'ok', 'message': 'Flask server is running'})
 
     return app
 
-app = create_app()
-
 if __name__ == '__main__':
-    app.run(port=5174, debug=True)
+    app = create_app()
+    app.run(debug=True, port=5174)

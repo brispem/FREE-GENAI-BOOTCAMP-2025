@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Clock, BookOpen, ArrowUpDown } from 'lucide-react';
+import { API_CONFIG } from '@/config/api';
 
 interface Session {
   id: number;
   group_name: string;
-  words_reviewed: number;
-  accuracy: number;
-  created_at: string;
-  minutes_ago: number;
+  activity_name: string;
+  review_items_count: number;
+  start_time: string;
 }
 
 export default function Sessions() {
@@ -19,10 +19,10 @@ export default function Sessions() {
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/sessions');
+        const response = await fetch(`${API_CONFIG.BASE_URL}/api/study-sessions`);
         if (!response.ok) throw new Error('Failed to fetch sessions');
         const data = await response.json();
-        setSessions(data);
+        setSessions(data.items);
       } catch (error) {
         console.error('Error fetching sessions:', error);
       } finally {
@@ -69,18 +69,23 @@ export default function Sessions() {
                     <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
                       {session.group_name}
                     </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      {session.activity_name}
+                    </p>
                   </div>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">{session.minutes_ago} minutes ago</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {new Date(session.start_time).toLocaleString()}
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
                   <div className="flex items-center">
                     <Clock className="mr-2 h-4 w-4" />
-                    {session.created_at}
+                    {new Date(session.start_time).toLocaleDateString()}
                   </div>
                   <div className="flex items-center">
                     <BookOpen className="mr-2 h-4 w-4" />
-                    {session.words_reviewed} words reviewed
+                    {session.review_items_count} words reviewed
                   </div>
                 </div>
               </div>

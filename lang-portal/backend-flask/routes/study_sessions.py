@@ -154,14 +154,61 @@ def load(app):
   @app.route('/api/study-sessions', methods=['POST'])
   @cross_origin()
   def create_session():
-    data = request.get_json()
-    cursor = app.db.cursor()
-    cursor.execute("""
-        INSERT INTO study_sessions (group_id, created_at)
-        VALUES (?, CURRENT_TIMESTAMP)
-    """, (data['group_id'],))
-    app.db.commit()
-    return jsonify({'session_id': cursor.lastrowid})
+    try:
+      data = request.get_json()
+      if not data or 'group_id' not in data:
+        return jsonify({
+          'success': False,
+          'error': 'Missing group_id in request'
+        }), 400
+
+      cursor = app.db.cursor()
+      cursor.execute("""
+          INSERT INTO study_sessions (group_id, study_activity_id, created_at)
+          VALUES (?, 1, CURRENT_TIMESTAMP)
+      """, (data['group_id'],))
+      app.db.commit()
+      session_id = cursor.lastrowid
+      return jsonify({
+        'success': True,
+        'id': session_id,
+        'group_id': data['group_id'],
+        'study_activity_id': 1
+      }), 201
+    except Exception as e:
+      print(f"Error creating session: {str(e)}")
+      return jsonify({
+        'success': False,
+        'error': str(e)
+      }), 500
+
+  @app.route('/api/session-words', methods=['POST'])
+  @cross_origin()
+  def record_word_review():
+    try:
+      data = request.get_json()
+      if not data or 'session_id' not in data or 'word_id' not in data or 'correct' not in data:
+        return jsonify({
+          'success': False,
+          'error': 'Missing required fields: session_id, word_id, or correct'
+        }), 400
+
+      cursor = app.db.cursor()
+      cursor.execute("""
+          INSERT INTO word_review_items (word_id, study_session_id, correct, created_at)
+          VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+      """, (data['word_id'], data['session_id'], 1 if data['correct'] else 0))
+      app.db.commit()
+      return jsonify({
+        'success': True,
+        'message': 'Answer recorded successfully'
+      }), 201
+    except Exception as e:
+      print(f"Error recording word review: {str(e)}")
+      return jsonify({
+        'success': False,
+        'error': str(e)
+      }), 500
 
   # todo POST /study_sessions/:id/review
 
@@ -183,3 +230,52 @@ def load(app):
     except Exception as e:
       print(f"Error in reset_study_sessions: {str(e)}")  # Add logging
       return jsonify({"error": str(e)}), 500
+
+  @app.route('/api/study-sessions/<id>', methods=['PATCH'])
+  @cross_origin()
+  def update_study_session(id):
+    try:
+      data = request.get_json()
+      cursor = app.db.cursor()
+      
+      # Update session fields based on request data
+      update_fields = []
+      params = []
+      
+      if 'status' in data:
+        update_fields.append('status = ?')
+        params.append(data['status'])
+      
+      if 'end_time' in data:
+        update_fields.append('end_time = ?')
+        params.append(data['end_time'])
+      
+      if not update_fields:
+        return jsonify({
+          'success': False,
+          'error': 'No fields to update'
+        }), 400
+      
+      # Add session id to params
+      params.append(id)
+      
+      # Build and execute update query
+      query = f"""
+        UPDATE study_sessions 
+        SET {', '.join(update_fields)}
+        WHERE id = ?
+      """
+      cursor.execute(query, params)
+      app.db.commit()
+      
+      return jsonify({
+        'success': True,
+        'message': 'Session updated successfully'
+      })
+      
+    except Exception as e:
+      print(f"Error updating session: {str(e)}")
+      return jsonify({
+        'success': False,
+        'error': str(e)
+      }), 500

@@ -1,14 +1,14 @@
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { BookOpen, Layout, BookText, FolderOpen, History, Settings, Globe, Sun, Moon } from 'lucide-react';
+import { BookOpen, Layout, FolderOpen, History, Settings, Globe, Sun, Moon, ChartBar } from 'lucide-react';
 import { useTheme } from '@/components/theme-provider';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Layout },
   { name: 'Spanish History', href: '/history', icon: Globe },
   { name: 'Study Activities', href: '/study-activities', icon: BookOpen },
-  { name: 'Words', href: '/words', icon: BookText },
   { name: 'Word Groups', href: '/groups', icon: FolderOpen },
+  { name: 'Progress', href: '/progress', icon: ChartBar },
   { name: 'Sessions', href: '/sessions', icon: History },
   { name: 'Settings', href: '/settings', icon: Settings },
 ];

@@ -90,19 +90,51 @@ const Dashboard = () => {
         {/* Quick Stats */}
         <div className="grid md:grid-cols-4 gap-6">
           {[
-            { label: "Study Sessions", value: stats?.study_sessions, icon: History, color: "from-[#AA151B]" },
-            { label: "Words Learned", value: stats?.words_learned, icon: BookOpen, color: "from-[#F1BF00]" },
-            { label: "Active Groups", value: stats?.active_groups, icon: Users, color: "from-[#AA151B]" },
-            { label: "Success Rate", value: stats?.success_rate ? `${stats.success_rate}%` : '0%', icon: ChartBar, color: "from-[#F1BF00]" },
-          ].map(({ label, value, icon: Icon, color }) => (
-            <Card key={label} className="p-6 flex flex-col items-center">
+            { 
+              label: "Study Sessions", 
+              value: stats?.study_sessions, 
+              icon: History, 
+              color: "from-[#AA151B]",
+              description: "Total practice sessions completed"
+            },
+            { 
+              label: "Words Learned", 
+              value: stats?.words_learned, 
+              icon: BookOpen, 
+              color: "from-[#F1BF00]",
+              description: "Unique words practiced"
+            },
+            { 
+              label: "Active Groups", 
+              value: stats?.active_groups, 
+              icon: Users, 
+              color: "from-[#AA151B]",
+              description: "Groups practiced in last 30 days"
+            },
+            { 
+              label: "Success Rate", 
+              value: stats?.success_rate ? `${stats.success_rate}%` : '0%', 
+              icon: ChartBar, 
+              color: "from-[#F1BF00]",
+              description: "Overall correct answers"
+            },
+          ].map(({ label, value, icon: Icon, color, description }) => (
+            <Card 
+              key={label} 
+              className="p-6 relative overflow-hidden transition-all duration-300 hover:shadow-lg border-t-4 border-[#AA151B] dark:bg-gray-800"
+            >
               {loading ? (
                 <Loader2 className="h-8 w-8 animate-spin text-[#AA151B]" />
               ) : (
                 <>
-                  <Icon className={`h-8 w-8 mb-2 bg-gradient-to-r ${color} to-transparent bg-clip-text`} />
-                  <h3 className="text-3xl font-bold mb-2">{value || 0}</h3>
-                  <p className="text-gray-600 dark:text-gray-300">{label}</p>
+                  <div className="flex items-center justify-between mb-4">
+                    <Icon className={`h-8 w-8 bg-gradient-to-r ${color} to-[#F1BF00] text-white rounded-lg p-1.5`} />
+                    <div className="text-3xl font-bold bg-gradient-to-r from-[#AA151B] to-[#F1BF00] bg-clip-text text-transparent">
+                      {value || 0}
+                    </div>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">{label}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{description}</p>
                 </>
               )}
             </Card>
@@ -129,7 +161,7 @@ const Dashboard = () => {
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border-t-4 border-[#F1BF00] p-6">
             <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Word Groups 🎯</h2>
             <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Organized collections of vocabulary to help you learn effectively.
+              Browse and practice Spanish vocabulary organised by themes.
             </p>
             <Link 
               to="/groups"
@@ -141,12 +173,12 @@ const Dashboard = () => {
 
           {/* Progress Tracker */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border-t-4 border-[#AA151B] p-6">
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Progress Tracker 📈</h2>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Progress Tracker 📊</h2>
             <p className="text-gray-600 dark:text-gray-300 mb-6">
               Monitor your learning journey and track your improvements.
             </p>
             <Link 
-              to="/sessions"
+              to="/progress"
               className="inline-flex items-center justify-center w-full px-4 py-2 bg-gradient-to-r from-[#AA151B] to-[#AA151B] hover:to-[#F1BF00] text-white rounded-lg transition-all duration-300"
             >
               Check Progress

@@ -10,11 +10,10 @@ def load(app):
       cursor = app.db.cursor()
       cursor.execute("""
         SELECT g.id, g.name,
-               COUNT(w.id) as total_words,
-               COUNT(CASE WHEN wri.correct THEN 1 END) as completed
+               COUNT(v.id) as total_words,
+               0 as completed
         FROM groups g
-        LEFT JOIN words w ON w.group_id = g.id
-        LEFT JOIN word_review_items wri ON w.id = wri.word_id
+        LEFT JOIN vocabulary v ON v.group_id = g.id
         GROUP BY g.id
       """)
       groups = cursor.fetchall()
@@ -28,37 +27,62 @@ def load(app):
   def get_group(group_id):
     cursor = app.db.cursor()
     try:
-        # Get group details
+        # Get group details with statistics
         cursor.execute("""
-            SELECT g.*, 
-                   COUNT(w.id) as total_words,
-                   COALESCE(AVG(CASE WHEN wri.correct THEN 100 ELSE 0 END), 0) as accuracy,
-                   MAX(wri.created_at) as last_practice
+            WITH word_stats AS (
+                SELECT 
+                    v.id as word_id,
+                    COUNT(wri.id) as total_attempts,
+                    SUM(CASE WHEN wri.correct = 1 THEN 1 ELSE 0 END) as correct_count
+                FROM vocabulary v
+                LEFT JOIN word_review_items wri ON v.id = wri.word_id
+                WHERE v.group_id = ?
+                GROUP BY v.id
+            )
+            SELECT 
+                g.id, 
+                g.name,
+                COUNT(v.id) as total_words,
+                COALESCE(AVG(CASE 
+                    WHEN ws.total_attempts > 0 
+                    THEN (ws.correct_count * 100.0 / ws.total_attempts) 
+                    ELSE 0 
+                END), 0) as accuracy,
+                MAX(wri.created_at) as last_practice
             FROM groups g
-            LEFT JOIN words w ON w.group_id = g.id
-            LEFT JOIN word_review_items wri ON w.id = wri.word_id
+            LEFT JOIN vocabulary v ON v.group_id = g.id
+            LEFT JOIN word_stats ws ON v.id = ws.word_id
+            LEFT JOIN word_review_items wri ON v.id = wri.word_id
             WHERE g.id = ?
             GROUP BY g.id
-        """, (group_id,))
+        """, (group_id, group_id))
         group = cursor.fetchone()
 
-        # Get words in group
+        if not group:
+            return jsonify({"error": "Group not found"}), 404
+
+        # Get words in group with their statistics
         cursor.execute("""
-            SELECT w.spanish, w.english,
-                   COUNT(CASE WHEN wri.correct THEN 1 END) as correct,
-                   COUNT(CASE WHEN NOT wri.correct THEN 1 END) as wrong
-            FROM words w
-            LEFT JOIN word_review_items wri ON w.id = wri.word_id
-            WHERE w.group_id = ?
-            GROUP BY w.id
+            SELECT 
+                v.id, 
+                v.spanish, 
+                v.english,
+                COUNT(wri.id) as total_attempts,
+                SUM(CASE WHEN wri.correct = 1 THEN 1 ELSE 0 END) as correct,
+                SUM(CASE WHEN wri.correct = 0 THEN 1 ELSE 0 END) as wrong
+            FROM vocabulary v
+            LEFT JOIN word_review_items wri ON v.id = wri.word_id
+            WHERE v.group_id = ?
+            GROUP BY v.id
         """, (group_id,))
         words = cursor.fetchall()
 
         return jsonify({
-            "group": group,
-            "words": words
+            "group": dict(group),
+            "words": [dict(word) for word in words]
         })
     except Exception as e:
+        print(f"Error getting group {group_id}: {str(e)}")
         return jsonify({"error": str(e)}), 500
 
   @app.route('/groups/<int:id>/words', methods=['GET'])

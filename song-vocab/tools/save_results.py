@@ -20,6 +20,10 @@ def save_results(song_id: str, lyrics: Union[str, Dict[str, str]], vocabulary: L
     Returns:
         Dict[str, Any]: The song_id that was used to save the files
     """
+    # Create directories if they don't exist
+    lyrics_path.mkdir(parents=True, exist_ok=True)
+    vocabulary_path.mkdir(parents=True, exist_ok=True)
+    
     # Save lyrics
     lyrics_file = lyrics_path / f"{song_id}.txt"
     

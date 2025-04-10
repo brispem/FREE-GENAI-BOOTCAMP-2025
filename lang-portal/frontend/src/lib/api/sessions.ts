@@ -1,5 +1,7 @@
+import { API_CONFIG } from '@/config/api';
+
 export async function startSession(groupId: string, activityType: string) {
-  const response = await fetch('http://localhost:5000/api/sessions', {
+  const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.STUDY_SESSIONS}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

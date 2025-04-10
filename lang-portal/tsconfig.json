@@ -11,8 +11,23 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "allowJs": true,
-    "types": ["node"]
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["frontend/src/*"]
+    },
+    "jsx": "react-jsx",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ]
   },
-  "include": ["backend/**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "frontend/src/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 } 

@@ -1,5 +1,4 @@
 # import ollama  # Commented out for OpenAI usage
-import openai  # Add OpenAI import
 from typing import List, Dict, Any, Optional
 import json
 import logging
@@ -15,6 +14,7 @@ from tools.save_results import save_results
 import math
 import os  # Add os import for environment variables
 from dotenv import load_dotenv
+from openai import OpenAI
 
 # Load environment variables from the song-vocab directory
 env_path = Path(__file__).parent / '.env'
@@ -94,7 +94,7 @@ class SongLyricsAgent:
         api_key = os.getenv("OPENAI_API_KEY")
         
         # Initialize OpenAI client with the API key
-        self.client = openai.Client(api_key=api_key)
+        self.client = OpenAI(api_key=api_key)
         
         # Load the agent prompt
         prompt_path = Path(__file__).parent / "prompts" / "Lyrics-Angent.md"
@@ -200,17 +200,14 @@ class SongLyricsAgent:
             {"role": "user", "content": message}
         ]
         
-        # Get the model name from environment or use default
-        model_name = os.getenv("MODEL_NAME", "gpt-4o")
-        
         current_turn = 0
         while current_turn < max_turns:
             try:
                 logger.info(f"Turn {current_turn + 1}/{max_turns}")
                 
-                # Get response from OpenAI with explicit API key
+                # Get response from OpenAI with explicit model name
                 response = self.client.chat.completions.create(
-                    model=model_name,  # Use the model from environment variable
+                    model="gpt-4o-2024-08-06",  # Hardcoded model name
                     messages=conversation,
                     temperature=0.2
                 )
@@ -252,14 +249,14 @@ class SongLyricsAgent:
                 
                 # Parse tool call
                 action = self.parse_tool_call(assistant_message)
-                    if not action:
+                if not action:
                     logger.warning("No tool call found in response")
                     conversation.append({"role": "assistant", "content": assistant_message})
                     conversation.append({
-                        "role": "user", 
+                        "role": "user",
                         "content": "Please use one of the available tools to proceed. Format your response as Tool: tool_name(arg1=\"value1\", arg2=\"value2\")"
                     })
-                            continue
+                    continue
                 
                 # Execute the tool
                 tool_name, tool_args = action

@@ -1,6 +1,7 @@
-from flask import Blueprint, jsonify, current_app, redirect
+from flask import Blueprint, jsonify, current_app, redirect, request
 from flask_cors import cross_origin
 import requests
+import base64
 
 activities = Blueprint('activities', __name__)
 
@@ -67,4 +68,48 @@ def get_listening_exercises():
         })
     except Exception as e:
         print(f"Error in listening practice: {str(e)}")
-        return jsonify({'error': str(e)}), 500 
+        return jsonify({'error': str(e)}), 500
+
+@activities.route('/api/generate-image', methods=['POST'])
+@cross_origin()
+def generate_image():
+    try:
+        data = request.get_json()
+        if not data or 'location' not in data:
+            return jsonify({
+                'success': False,
+                'error': 'Missing location parameter'
+            }), 400
+
+        location = data['location'].strip()
+        print(f"Generating image for location: {location}")  # Debug log
+
+        # Get OpenAI client from app context
+        client = current_app.openai_client
+
+        # Generate image using DALL-E 3
+        response = client.images.generate(
+            model="dall-e-3",  # Using dall-e-3 for high-quality, recognisable images
+            prompt=f"A clear, photorealistic image of {location}. The image should be easily recognizable as {location} and suitable for language learning. The scene should be well-lit, centered, and from a typical viewing angle that makes the location immediately identifiable.",
+            n=1,
+            size="1024x1024",
+            quality="standard",
+            response_format="b64_json"
+        )
+
+        # Get the base64 image data
+        image_data = response.data[0].b64_json
+
+        # Return the image data
+        return jsonify({
+            'success': True,
+            'imageUrl': f"data:image/png;base64,{image_data}"
+        })
+
+    except Exception as e:
+        error_msg = f"Error generating image for '{data.get('location', '')}': {str(e)}"
+        print(error_msg)  # More detailed error logging
+        return jsonify({
+            'success': False,
+            'error': error_msg
+        }), 500 

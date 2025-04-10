@@ -21,4 +21,7 @@ dist/
 # Logs
 *.log
 app.log
-gradio_app.log 
+streamlit_app.log
+
+# cursor rules
+.cursor/

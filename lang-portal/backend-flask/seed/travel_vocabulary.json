@@ -1,0 +1,65 @@
+{
+  "group_id": 3,
+  "words": [
+    {
+      "spanish": "el aeropuerto",
+      "english": "airport",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "el hotel",
+      "english": "hotel",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "el restaurante",
+      "english": "restaurant",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "el taxi",
+      "english": "taxi",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "el museo",
+      "english": "museum",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "la playa",
+      "english": "beach",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "el pasaporte",
+      "english": "passport",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "la maleta",
+      "english": "suitcase",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "el mapa",
+      "english": "map",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "el billete",
+      "english": "ticket",
+      "correct": 0,
+      "wrong": 0
+    }
+  ]
+} 

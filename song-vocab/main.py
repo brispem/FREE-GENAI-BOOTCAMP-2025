@@ -99,8 +99,8 @@ async def get_lyrics(request: LyricsRequest) -> Dict[str, Any]:
                 logger.info(f"Saved lyrics to {lyrics_file}")
                 
                 # Generate and save vocabulary
-                from tools.extract_vocabulary import extract_vocabulary_from_text
-                vocabulary = extract_vocabulary_from_text(stored_lyrics)
+                from tools.extract_vocabulary import extract_vocabulary
+                vocabulary = extract_vocabulary(stored_lyrics)
                 with open(vocab_file, 'w', encoding='utf-8') as f:
                     json.dump(vocabulary, f, ensure_ascii=False, indent=2)
                 logger.info(f"Saved vocabulary to {vocab_file}")

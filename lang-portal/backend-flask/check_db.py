@@ -1,7 +1,7 @@
 import sqlite3
 
 def check_tables():
-    conn = sqlite3.connect('word_bank.db')
+    conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     
     # Check tables

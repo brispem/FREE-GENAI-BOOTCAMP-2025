@@ -1,4 +1,3 @@
-import gradio as gr
 import requests
 import json
 import random
@@ -11,6 +10,7 @@ import base64
 from config import PORT, OPENAI_API_KEY
 from dotenv import load_dotenv
 from datetime import datetime
+import streamlit as st
 
 # Load environment variables before anything else
 load_dotenv()
@@ -18,108 +18,182 @@ load_dotenv()
 # Setup logging
 logger = logging.getLogger('spanish_app')
 logger.setLevel(logging.DEBUG)
-fh = logging.FileHandler('gradio_app.log')
+fh = logging.FileHandler('streamlit_app.log')
 fh.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 logger.addHandler(fh)
 
 # Get backend port from environment
-BACKEND_PORT = os.getenv('BACKEND_PORT', '5001')
-API_BASE_URL = os.getenv('API_BASE_URL', 'http://localhost:5001')
+BACKEND_PORT = os.getenv('BACKEND_PORT', '5174')
+API_BASE_URL = os.getenv('API_BASE_URL', 'http://localhost:5174')
+
+st.set_page_config(
+    page_title="Spanish Writing Practice",
+    page_icon="📘",
+    layout="wide"
+)
+
+# Custom CSS for light theme styling
+st.markdown("""
+<style>
+body, .stApp {
+    background-color: #f9fafb !important;
+    color: #1a1a1a !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+h1 {
+    color: #AA151B !important;
+    font-weight: 700 !important;
+    text-align: center;
+    margin-bottom: 0.5rem !important;
+}
+
+h2, h3 {
+    color: #AA151B !important;
+    font-weight: 700 !important;
+    margin-bottom: 0.5rem !important;
+    font-size: 1.25rem !important;
+}
+
+.card {
+    background-color: #ffffff !important;
+    padding: 1rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    margin: 0;
+}
+
+.stButton > button {
+    background: linear-gradient(90deg, #D11A2A, #F1BF00) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.stButton > button:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+}
+
+textarea, .stTextArea textarea {
+    background-color: #f8f8f8 !important;
+    color: #1a1a1a !important;
+    border: 1px solid #ddd !important;
+    border-radius: 8px !important;
+    padding: 0.5rem;
+}
+
+div[data-testid="stFileUploader"] > section {
+    background-color: #f8f8f8 !important;
+    border: 1px solid #ddd !important;
+    border-radius: 8px !important;
+    padding: 1rem;
+    color: #1a1a1a !important;
+}
+
+div[data-testid="stFileUploader"] label,
+div[data-testid="stFileUploader"] span {
+    color: #1a1a1a !important;
+}
+
+a.nav-button {
+    background: linear-gradient(90deg, #AA151B, #F1BF00);
+    color: white !important;
+    font-weight: bold;
+    padding: 8px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-block;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    position: fixed;
+    top: 50px;
+    left: 10px;
+    z-index: 1000;
+}
+
+a.nav-button:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+}
+
+.stTextArea, .stFileUploader, .stButton {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+</style>
+""", unsafe_allow_html=True)
 
 def load_prompts():
-    """Load prompts from YAML file"""
-    with open('prompts.yaml', 'r', encoding='utf-8') as f:
-        return yaml.safe_load(f)
+    """Load prompts from a YAML file"""
+    try:
+        with open('prompts.yaml', 'r', encoding='utf-8') as f:
+            return yaml.safe_load(f)
+    except FileNotFoundError:
+        logger.error("prompts.yaml file not found.")
+        return {}
+    except Exception as e:
+        logger.error(f"Error loading prompts: {str(e)}")
+        return {}
 
-def get_shared_styles():
-    return """
-    <style>
-        /* Custom fonts */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+def create_ui():
+    # Navigation Bar
+    st.markdown("""
+        <a href="http://localhost:5173/study-activities" class="nav-button">← Return to Study Activities</a>
+    """, unsafe_allow_html=True)
+
+    st.title("Spanish Writing Practice")
+    st.markdown("<p style='text-align: center;'>Practice writing Spanish sentences and get instant feedback</p>", unsafe_allow_html=True)
+
+    # Layout with equal columns
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Practice Section
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("### 1. Get Your Sentence")
+        if 'english_sentence' not in st.session_state:
+            st.session_state['english_sentence'] = None
+
+        if st.button("Generate New Sentence"):
+            st.session_state['english_sentence'], instruction = app.generate_sentence()
+            st.text_area("English Sentence", st.session_state['english_sentence'], height=80)
+            st.text_area("Instructions", instruction, height=80)
+        st.markdown('</div>', unsafe_allow_html=True)
+
+        # Write Your Translation
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("### 2. Write Your Translation")
+        image_input = st.file_uploader("Upload your handwritten Spanish translation", type=["jpg", "jpeg", "png"])
         
-        /* Root variables to match portal theme */
-        :root {
-            --spanish-red: #AA151B;
-            --spanish-yellow: #F1BF00;
-            --text-primary: #1a1a1a;
-            --text-secondary: #666666;
-            --bg-primary: #ffffff;
-            --bg-secondary: #f9fafb;
-        }
-
-        /* Global Gradio Overrides */
-        body {
-            font-family: 'Inter', sans-serif !important;
-            background: linear-gradient(to bottom, var(--bg-primary), var(--bg-secondary)) !important;
-        }
-
-        /* Headers */
-        h1 {
-            font-size: 2.5rem !important;
-            font-weight: 700 !important;
-            background: linear-gradient(90deg, var(--spanish-red), var(--spanish-yellow)) !important;
-            -webkit-background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-            text-align: center !important;
-            padding: 1rem 0 !important;
-        }
-
-        /* Buttons */
-        .primary-button {
-            background: linear-gradient(90deg, var(--spanish-red), var(--spanish-yellow)) !important;
-            color: white !important;
-            border: none !important;
-            border-radius: 0.5rem !important;
-            padding: 0.75rem 1.5rem !important;
-            font-weight: 500 !important;
-            transition: all 0.3s ease !important;
-        }
-
-        .primary-button:hover {
-            opacity: 0.9 !important;
-            transform: translateY(-1px) !important;
-        }
-
-        /* Cards */
-        .card {
-            background: white !important;
-            border-radius: 0.5rem !important;
-            border: 1px solid rgba(170, 21, 27, 0.1) !important;
-            padding: 2rem !important;
-            margin: 1rem 0 !important;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-        }
-
-        /* Text inputs */
-        .input-box {
-            border-radius: 0.5rem !important;
-            border: 1px solid rgba(170, 21, 27, 0.2) !important;
-        }
-
-        /* Return button styling */
-        .return-button {
-            position: fixed !important;
-            top: 1rem !important;
-            left: 1rem !important;
-            background: linear-gradient(90deg, #AA151B, #F1BF00) !important;
-            color: white !important;
-            padding: 0.5rem 1rem !important;
-            border-radius: 0.5rem !important;
-            text-decoration: none !important;
-            font-weight: 500 !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-            z-index: 1000 !important;
-        }
+        # Image Preview
+        if image_input:
+            st.markdown("#### Preview of Your Handwriting:")
+            st.image(image_input, width=300)
         
-        .return-button:hover {
-            opacity: 0.9 !important;
-            transform: translateY(-1px) !important;
-        }
-    </style>
-    """
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with col2:
+        # Feedback Section
+        st.markdown('<div class="card">', unsafe_allow_html=True)
+        st.markdown("### 3. Get Feedback")
+        if st.button("Submit for Review"):
+            if st.session_state['english_sentence'] is not None:
+                feedback = app.grade_handwriting(image_input, st.session_state['english_sentence'])
+                st.markdown("### Teacher's Feedback")
+                st.success(feedback)
+                st.toast("✅ Attempt logged successfully!")  # Requires Streamlit v1.27+
+            else:
+                st.error("Please generate a sentence first.")
+        st.markdown('</div>', unsafe_allow_html=True)
 
 class SpanishTranslationApp:
     def __init__(self):
+        if OPENAI_API_KEY == 'not-configured':
+            raise ValueError("OpenAI API key not found in root .env file")
         self.client = OpenAI(api_key=OPENAI_API_KEY)
         self.vocabulary = None
         self.current_word = None
@@ -127,7 +201,8 @@ class SpanishTranslationApp:
         self.prompts = load_prompts()
         self.study_session_id = os.getenv('SESSION_ID')
         self.api_base_url = API_BASE_URL
-        self.load_vocabulary()
+        # Comment out the following line to stop fetching vocabulary
+        # self.load_vocabulary()
 
     def load_vocabulary(self):
         """Fetch vocabulary from API using group_id"""
@@ -151,7 +226,7 @@ class SpanishTranslationApp:
         """Generate a new English sentence using GPT-4"""
         try:
             completion = self.client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-4o-2024-08-06",
                 messages=[
                     {"role": "system", "content": "You are a language teacher creating simple English sentences for Spanish learners. Generate one simple sentence using basic vocabulary and simple present or past tense. The sentence should be suitable for beginner Spanish practice. Only respond with the sentence, nothing else."},
                     {"role": "user", "content": "Generate a simple English sentence."}
@@ -165,18 +240,17 @@ class SpanishTranslationApp:
             logger.error(f"Error generating sentence: {str(e)}")
             return f"Error generating sentence: {str(e)}", str(e)
 
-    def grade_handwriting(self, image_path, english_sentence):
+    def grade_handwriting(self, uploaded_file, english_sentence):
         """Grade the handwritten Spanish translation and log the attempt"""
         try:
-            if image_path is None:
+            if uploaded_file is None:
                 return "Please upload an image of your handwritten translation."
-                
-            # Get feedback from GPT-4
-            with open(image_path, "rb") as image_file:
-                encoded_image = base64.b64encode(image_file.read()).decode('utf-8')
+            
+            # Read the file content
+            encoded_image = base64.b64encode(uploaded_file.read()).decode('utf-8')
 
             completion = self.client.chat.completions.create(
-                model="gpt-4o",
+                model="gpt-4o-2024-08-06",
                 messages=[
                     {
                         "role": "system",
@@ -251,239 +325,6 @@ class SpanishTranslationApp:
         except Exception as e:
             logger.error(f"Error submitting result: {str(e)}")
 
-def create_ui():
-    app = SpanishTranslationApp()
-    
-    theme = gr.themes.Soft()
-    
-    with gr.Blocks(
-        title="Spanish Writing Practice",
-        theme=theme,
-        css="""
-            /* Main container */
-            .gradio-container {
-                width: 100% !important;
-                max-width: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-                background: linear-gradient(to bottom, #ffffff, #f9fafb) !important;
-            }
-
-            /* Content wrapper */
-            .content-wrapper {
-                max-width: 1200px !important;
-                margin: 0 auto !important;
-                padding: 2rem !important;
-            }
-
-            /* Header styling */
-            h1 {
-                color: #AA151B !important;
-                font-family: 'Inter', sans-serif !important;
-                font-weight: 700 !important;
-                font-size: 2.5rem !important;
-                text-align: center !important;
-                margin-bottom: 0.5rem !important;
-                background: linear-gradient(90deg, #AA151B, #F1BF00) !important;
-                -webkit-background-clip: text !important;
-                -webkit-text-fill-color: transparent !important;
-            }
-
-            /* Buttons */
-            button.primary {
-                background: linear-gradient(90deg, #AA151B, #F1BF00) !important;
-                border: none !important;
-                color: white !important;
-                font-weight: 600 !important;
-                padding: 1rem !important;
-                width: 100% !important;
-                border-radius: 0.5rem !important;
-                font-size: 1.1rem !important;
-                transition: all 0.2s ease !important;
-            }
-
-            button.primary:hover {
-                transform: translateY(-2px) !important;
-                box-shadow: 0 4px 12px rgba(170, 21, 27, 0.15) !important;
-            }
-
-            /* Containers */
-            .container {
-                background: white !important;
-                border-radius: 0.75rem !important;
-                padding: 1.5rem !important;
-                margin: 1rem 0 !important;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
-                border: 1px solid rgba(170, 21, 27, 0.1) !important;
-            }
-
-            /* Text styling */
-            .subtitle {
-                text-align: center !important;
-                color: #666666 !important;
-                margin-bottom: 3rem !important;
-                font-size: 1.2rem !important;
-            }
-
-            /* Labels */
-            label span {
-                font-weight: 500 !important;
-                font-size: 1rem !important;
-                color: #374151 !important;
-                margin-bottom: 0.5rem !important;
-            }
-
-            /* Input fields */
-            .input-box {
-                border: 1px solid rgba(170, 21, 27, 0.2) !important;
-                border-radius: 0.5rem !important;
-                padding: 0.75rem !important;
-                background: #f9fafb !important;
-                margin-bottom: 1.5rem !important;
-            }
-
-            /* Row layout */
-            .gap {
-                gap: 2rem !important;
-            }
-
-            /* Section headers */
-            .section-title {
-                font-size: 1.25rem !important;
-                font-weight: 600 !important;
-                color: #1a1a1a !important;
-                margin-bottom: 1rem !important;
-            }
-
-            /* Image upload area */
-            .upload-box {
-                border: 2px dashed rgba(170, 21, 27, 0.2) !important;
-                border-radius: 0.75rem !important;
-                padding: 2rem !important;
-                text-align: center !important;
-                background: #f9fafb !important;
-                margin: 1rem 0 !important;
-            }
-
-            /* Feedback box */
-            .feedback-box {
-                background: #f9fafb !important;
-                border-radius: 0.5rem !important;
-                padding: 1rem !important;
-                margin-top: 1rem !important;
-                font-size: 1rem !important;
-                line-height: 1.5 !important;
-            }
-
-            /* Fixed navigation bar */
-            .nav-bar {
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                right: 0 !important;
-                background: white !important;
-                padding: 1rem !important;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
-                z-index: 1000 !important;
-                display: flex !important;
-                justify-content: space-between !important;
-                align-items: center !important;
-            }
-
-            .nav-links {
-                display: flex !important;
-                gap: 1rem !important;
-            }
-
-            .nav-link {
-                display: inline-block !important;
-                background: linear-gradient(90deg, #AA151B, #F1BF00) !important;
-                color: white !important;
-                padding: 0.5rem 1rem !important;
-                border-radius: 0.5rem !important;
-                text-decoration: none !important;
-                font-weight: 500 !important;
-                transition: all 0.2s ease !important;
-            }
-
-            .nav-link:hover {
-                opacity: 0.9 !important;
-                transform: translateY(-1px) !important;
-            }
-
-            /* Adjust content to account for fixed nav */
-            .content-wrapper {
-                margin-top: 5rem !important;
-            }
-        """
-    ) as interface:
-        # Add navigation bar at the top
-        gr.HTML('''
-            <div class="nav-bar">
-                <div class="nav-links">
-                    <a href="http://localhost:5173" class="nav-link">← Return to Fluency Portal</a>
-                    <a href="http://localhost:5173/study-activities" class="nav-link">← Back to Study Activities</a>
-                </div>
-            </div>
-        ''')
-        
-        with gr.Column(elem_classes="content-wrapper"):
-            gr.HTML('<h1>Spanish Writing Practice</h1>')
-            gr.HTML('<p class="subtitle">Practice writing Spanish sentences and get instant feedback</p>')
-            
-            with gr.Row(elem_classes="gap"):
-                # Practice Section
-                with gr.Column(elem_classes="container", scale=1):
-                    gr.HTML('<h2 class="section-title">1. Get Your Sentence</h2>')
-                    generate_btn = gr.Button("Generate New Sentence", variant="primary")
-                    english_sentence = gr.Textbox(
-                        label="English Sentence",
-                        lines=2,
-                        interactive=False,
-                        elem_classes="input-box"
-                    )
-                    instruction_output = gr.Textbox(
-                        label="Instructions",
-                        interactive=False,
-                        elem_classes="input-box"
-                    )
-                    gr.HTML('<h2 class="section-title">2. Write Your Translation</h2>')
-                    image_input = gr.Image(
-                        label="Upload your handwritten Spanish translation",
-                        type="filepath",
-                        sources="upload",
-                        elem_classes="upload-box"
-                    )
-                
-                # Feedback Section
-                with gr.Column(elem_classes="container", scale=1):
-                    gr.HTML('<h2 class="section-title">3. Get Feedback</h2>')
-                    submit_btn = gr.Button("Submit for Review", variant="primary")
-                    feedback_output = gr.Textbox(
-                        label="Teacher's Feedback",
-                        lines=6,
-                        interactive=False,
-                        elem_classes="feedback-box"
-                    )
-
-        # Event handlers
-        generate_btn.click(
-            app.generate_sentence,
-            outputs=[english_sentence, instruction_output]
-        )
-        
-        submit_btn.click(
-            app.grade_handwriting,
-            inputs=[image_input, english_sentence],
-            outputs=feedback_output
-        )
-
-    return interface
-
 if __name__ == "__main__":
-    interface = create_ui()
-    interface.launch(
-        server_name="0.0.0.0",
-        server_port=8081,
-        share=False
-    )
+    app = SpanishTranslationApp()
+    create_ui()

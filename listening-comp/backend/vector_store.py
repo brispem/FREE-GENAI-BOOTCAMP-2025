@@ -3,50 +3,83 @@ from typing import Dict, List, Optional
 import json
 import chromadb
 from chromadb.config import Settings
-from azure.ai.inference import EmbeddingsClient
-from azure.core.credentials import AzureKeyCredential
+from openai import OpenAI
+from pathlib import Path
+from dotenv import load_dotenv
 
 class QuestionVectorStore:
     def __init__(self):
-        """Initialize ChromaDB client and Azure AI Inference"""
+        """Initialize ChromaDB client and OpenAI client"""
+        # Create data directory in the backend folder
+        self.data_dir = Path(__file__).resolve().parent / 'data'
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        
+        # Initialize ChromaDB with persistence in the backend/data directory
         self.client = chromadb.Client(Settings(
-            persist_directory="static/vectordb",
+            persist_directory=str(self.data_dir / "chroma"),
             is_persistent=True
         ))
         
-        # Initialize Azure AI Inference for embeddings
-        self.embedding_client = EmbeddingsClient(
-            endpoint=os.getenv("AZURE_OPENAI_ENDPOINT"),
-            credential=AzureKeyCredential(os.getenv("AZURE_OPENAI_API_KEY"))
+        # Initialize OpenAI client
+        root_env_path = Path(__file__).resolve().parent.parent.parent / '.env'
+        load_dotenv(root_env_path)
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY not found in environment variables")
+        
+        self.openai_client = OpenAI(
+            api_key=api_key,
+            base_url="https://api.openai.com/v1"
         )
         
-        # Get or create collection with proper handling
+        # Initialize collections
+        self._init_collections()
+    
+    def _init_collections(self):
+        """Initialize or get existing collections"""
         try:
-            # Try to get existing collection
-            self.transcript_collection = self.client.get_collection(name="transcripts")
-            print("Using existing transcripts collection")
-        except Exception:
-            # Collection doesn't exist, create new one
+            # Delete existing collections if they exist
             try:
-                self.transcript_collection = self.client.create_collection(
-                    name="transcripts",
-                    metadata={"hnsw:space": "cosine", "dimension": 1536}  # text-embedding-ada-002 dimension
-                )
-                print("Created new transcripts collection")
-            except Exception as e:
-                print(f"Error creating collection: {str(e)}")
-                # Ensure we have a collection one way or another
-                self.transcript_collection = self.client.get_collection(name="transcripts")
+                self.client.delete_collection(name="transcripts")
+                self.client.delete_collection(name="questions")
+            except:
+                pass
+            
+            # Create new collections
+            self.transcript_collection = self.client.create_collection(
+                name="transcripts",
+                metadata={"hnsw:space": "cosine"}
+            )
+            self.question_collection = self.client.create_collection(
+                name="questions",
+                metadata={"hnsw:space": "cosine"}
+            )
+            print("Created new collections")
+        except Exception as e:
+            print(f"Error initializing collections: {str(e)}")
+            # Use fallback JSON storage if ChromaDB fails
+            self._use_fallback_storage = True
+            print("Using fallback JSON storage")
+
+    def _get_embedding(self, text: str) -> List[float]:
+        """Get embedding from OpenAI"""
+        try:
+            response = self.openai_client.embeddings.create(
+                model="text-embedding-ada-002",
+                input=text
+            )
+            return response.data[0].embedding
+        except Exception as e:
+            print(f"Error getting embedding: {str(e)}")
+            return None
 
     def add_transcript(self, text: str, metadata: Dict, video_id: str) -> bool:
         """Add transcript to vector store"""
         try:
-            # Generate embedding using Azure AI Inference
-            response = self.embedding_client.create(
-                model="text-embedding-ada-002",
-                input=text
-            )
-            embedding = response.data[0].embedding
+            # Generate embedding using OpenAI
+            embedding = self._get_embedding(text)
+            if not embedding:
+                return False
             
             # Add to collection
             self.transcript_collection.add(
@@ -62,27 +95,10 @@ class QuestionVectorStore:
             return False
 
     def search_similar_content(self, query: str, n_results: int = 2) -> Optional[Dict]:
-        """Search for similar content using Azure embeddings"""
+        """Search for similar content using OpenAI embeddings"""
         try:
-            # Check if collection has any documents
-            if len(self.transcript_collection.get()['ids']) == 0:
-                print("No content in vector store yet")
-                return None
-                
-            # Generate embedding using Azure AI Inference
-            response = self.embedding_client.embed(
-                model="text-embedding-ada-002",
-                input=query
-            )
-            query_embedding = response.data[0].embedding
-            
-            # Search using embeddings
-            results = self.transcript_collection.query(
-                query_embeddings=[query_embedding],
-                n_results=n_results,
-                include=["documents", "metadatas"]
-            )
-            return results
+            # For now, return None to skip vector search and use direct question generation
+            return None
         except Exception as e:
             print(f"Error searching content: {str(e)}")
             return None
@@ -136,19 +152,67 @@ class QuestionVectorStore:
 
     def add_question(self, question: Dict, topic: str):
         """Add generated question to vector store"""
-        self.question_collection.add(
-            documents=[str(question)],
-            metadatas=[{"topic": topic}],
-            ids=[f"q_{len(self.question_collection.get()['ids'])}"]
-        )
+        try:
+            # Convert question to string and get embedding
+            question_text = f"Topic: {topic}\n{json.dumps(question, ensure_ascii=False)}"
+            embedding = self._get_embedding(question_text)
+            
+            if not embedding:
+                print("Failed to generate embedding for question")
+                return False
+            
+            # Get next ID
+            existing = self.question_collection.get()
+            next_id = len(existing.get('ids', [])) + 1
+            
+            # Add to collection with embedding
+            self.question_collection.add(
+                embeddings=[embedding],
+                documents=[question_text],
+                metadatas=[{
+                    "topic_name": topic,
+                    "question_data": json.dumps(question)
+                }],
+                ids=[f"q_{next_id}"]
+            )
+            print(f"Successfully added question for topic: {topic}")
+            return True
+        except Exception as e:
+            print(f"Error adding question: {str(e)}")
+            return False
 
-    def search_similar_questions(self, topic: str, n_results: int = 3) -> List[Dict]:
+    def search_similar_questions(self, topic: str, n_results: int = 3) -> Optional[Dict]:
         """Search for similar questions by topic"""
-        results = self.question_collection.query(
-            query_texts=[topic],
-            n_results=n_results
-        )
-        return results
+        try:
+            # Generate embedding for the topic
+            topic_embedding = self._get_embedding(topic)
+            if not topic_embedding:
+                return None
+            
+            # Search using embeddings
+            results = self.question_collection.query(
+                query_embeddings=[topic_embedding],
+                n_results=n_results,
+                include=["documents", "metadatas", "distances"]
+            )
+            
+            # Format results
+            questions = []
+            if results and results.get('metadatas'):
+                for idx, metadata in enumerate(results['metadatas']):
+                    if metadata and 'question_data' in metadata:
+                        question_data = json.loads(metadata['question_data'])
+                        questions.append({
+                            'question': question_data,
+                            'topic': metadata.get('topic_name', ''),
+                            'similarity': results['distances'][idx] if 'distances' in results else None
+                        })
+            
+            return {'questions': questions} if questions else None
+            
+        except Exception as e:
+            print(f"Error searching questions: {str(e)}")
+            return None
 
     def add_questions(self, section_num: int, questions: List[Dict], video_id: str):
         """Add questions to the vector store"""

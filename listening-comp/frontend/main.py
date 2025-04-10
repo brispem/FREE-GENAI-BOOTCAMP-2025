@@ -6,6 +6,11 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+# Get the root .env file path and load it
+root_dir = Path(__file__).resolve().parent.parent
+root_env_path = root_dir / '.env'
+load_dotenv(root_env_path)
+
 # Add the backend directory to Python path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -17,7 +22,6 @@ from backend.vector_store import QuestionVectorStore
 from backend.translation_service import TranslationService
 
 # Add the lang-portal directory to Python path
-root_dir = Path(__file__).resolve().parent.parent.parent
 sys.path.append(str(root_dir / 'lang-portal'))
 
 try:
@@ -196,13 +200,110 @@ if url:
     except Exception as e:
         st.error(f"Error getting transcript: {str(e)}")
 
+# Initialize session state if not already done
+if 'current_question' not in st.session_state:
+    st.session_state.current_question = None
+if 'show_feedback' not in st.session_state:
+    st.session_state.show_feedback = False
+if 'feedback' not in st.session_state:
+    st.session_state.feedback = None
+
 # Practice Section
 st.markdown("## Generate Practice Questions")
 topic = st.selectbox("Select Topic:", ["Shopping", "Travel", "Food", "Culture"])
 
-if st.button("Generate Question"):
-    # ... rest of your code for generating questions ...
-    pass
+def generate_new_question():
+    st.session_state.show_feedback = False
+    st.session_state.feedback = None
+    return True
+
+if st.button("Generate Question", on_click=generate_new_question):
+    try:
+        with st.spinner("Generating question..."):
+            generator = QuestionGenerator()
+            question = generator.generate_similar_question(2, topic)
+            
+            if question:
+                # Store the question in session state
+                st.session_state.current_question = question
+            else:
+                st.error("Failed to generate question. Please try again.")
+    except Exception as e:
+        st.error(f"Error: {str(e)}")
+        print(f"Detailed error: {str(e)}")  # For debugging
+
+# Display question if available
+if st.session_state.current_question:
+    question = st.session_state.current_question
+    
+    # Create a container for the question
+    question_container = st.container()
+    
+    with question_container:
+        # Introduction section with audio
+        st.subheader("Introducción")
+        st.write(question['Introducción'])
+        if 'audio_files' in question and 'Introducción' in question['audio_files']:
+            st.audio(question['audio_files']['Introducción'])
+        
+        # Conversation section with audio
+        st.subheader("Conversación")
+        st.write(question['Conversación'])
+        if 'audio_files' in question and 'Conversación' in question['audio_files']:
+            st.audio(question['audio_files']['Conversación'])
+        
+        # Question section with audio
+        st.subheader("Pregunta")
+        st.write(question['Pregunta'])
+        if 'audio_files' in question and 'Pregunta' in question['audio_files']:
+            st.audio(question['audio_files']['Pregunta'])
+        
+        # Options section
+        st.subheader("Opciones")
+        options = [(i, opt) for i, opt in enumerate(question['Opciones'], 1)]
+        selected_option = st.radio(
+            "Select your answer:",
+            options,
+            format_func=lambda x: f"{x[0]}. {x[1]}",
+            key="answer_options"
+        )
+
+        def submit_answer():
+            st.session_state.show_feedback = True
+            generator = QuestionGenerator()
+            st.session_state.feedback = generator.get_feedback(question, selected_option[0])
+
+        # Submit button
+        st.button("Submit Answer", on_click=submit_answer, key="submit_btn")
+
+        # Show feedback if available
+        if st.session_state.show_feedback and st.session_state.feedback:
+            feedback = st.session_state.feedback
+            
+            # Create a feedback container with appropriate styling
+            feedback_container = st.container()
+            
+            with feedback_container:
+                if feedback['correct']:
+                    st.success("¡Correcto! 🎉")
+                else:
+                    st.error("Incorrecto 😕")
+                
+                # Show explanation
+                st.markdown(f"**Explicación:** {feedback['explanation']}")
+                
+                # Show correct answer if incorrect
+                if not feedback['correct']:
+                    correct_answer = question['Opciones'][feedback['correct_answer'] - 1]
+                    st.markdown(f"**Respuesta correcta:** {feedback['correct_answer']}. {correct_answer}")
+                
+                def continue_practice():
+                    st.session_state.current_question = None
+                    st.session_state.show_feedback = False
+                    st.session_state.feedback = None
+                
+                # Add a continue button
+                st.button("Continue", on_click=continue_practice, key="continue_btn")
 
 # ... rest of your backend initialization and functionality ...
 

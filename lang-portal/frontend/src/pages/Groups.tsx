@@ -1,33 +1,109 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { BookOpen, Users, ArrowRight, ChevronRight } from 'lucide-react';
+import { BookOpen, Users, ArrowRight, ChevronRight, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { API_CONFIG } from '@/config/api';
+
+interface GroupStats {
+  id: string;
+  name: string;
+  icon: string;
+  totalAttempts: number;
+  overallProgress: number;
+  lastPractice: string;
+}
+
+interface WordStats {
+  correct: number;
+  wrong: number;
+}
+
+interface WordWithStats {
+  totalAttempts: number;
+  successRate: number;
+}
 
 export default function Groups() {
-  // Initial groups with zero values
-  const groups = [
+  const [groups, setGroups] = useState<GroupStats[]>([
     {
       id: "core-verbs",
       name: "Core Verbs",
-      totalWords: 0,
-      completed: 0,
-      icon: "🎯"
+      icon: "🎯",
+      totalAttempts: 0,
+      overallProgress: 0,
+      lastPractice: "Never"
     },
     {
       id: "common-phrases",
       name: "Common Phrases",
-      totalWords: 0,
-      completed: 0,
-      icon: "💬"
+      icon: "💬",
+      totalAttempts: 0,
+      overallProgress: 0,
+      lastPractice: "Never"
     },
     {
       id: "travel-vocabulary",
       name: "Travel Vocabulary",
-      totalWords: 0,
-      completed: 0,
-      icon: "✈️"
+      icon: "✈️",
+      totalAttempts: 0,
+      overallProgress: 0,
+      lastPractice: "Never"
     }
-  ];
+  ]);
+  const [loading, setLoading] = useState(true);
+
+  // Map string IDs to numeric IDs
+  const GROUP_ID_MAP: Record<string, number> = {
+    'core-verbs': 1,
+    'common-phrases': 2,
+    'travel-vocabulary': 3
+  };
+
+  useEffect(() => {
+    const fetchGroupsStats = async () => {
+      try {
+        const updatedGroups = await Promise.all(
+          groups.map(async (group) => {
+            const numericId = GROUP_ID_MAP[group.id];
+            const response = await fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.GROUPS}/${numericId}`);
+            if (!response.ok) return group;
+
+            const data = await response.json();
+            const wordsWithStats = (data.words || []).map((word: WordStats) => {
+              const totalAttempts = (word.correct || 0) + (word.wrong || 0);
+              const successRate = totalAttempts > 0 
+                ? Math.round((word.correct / totalAttempts) * 100) 
+                : 0;
+              return { totalAttempts, successRate };
+            });
+
+            const wordsWithAttempts = wordsWithStats.filter((word: WordWithStats) => word.totalAttempts > 0);
+            const overallProgress = wordsWithAttempts.length > 0
+              ? Math.round(
+                  wordsWithAttempts.reduce((sum: number, word: WordWithStats) => sum + word.successRate, 0) / 
+                  wordsWithAttempts.length
+                )
+              : 0;
+
+            return {
+              ...group,
+              totalAttempts: wordsWithStats.reduce((sum: number, word: WordWithStats) => sum + word.totalAttempts, 0),
+              overallProgress,
+              lastPractice: data.group.last_practice || "Never"
+            };
+          })
+        );
+
+        setGroups(updatedGroups);
+      } catch (error) {
+        console.error('Error fetching groups stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGroupsStats();
+  }, []);
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900">
@@ -52,20 +128,32 @@ export default function Groups() {
                   <span className="text-2xl">{group.icon}</span>
                 </div>
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600 dark:text-gray-400">Total Words:</span>
-                    <span className="font-medium text-gray-800 dark:text-gray-200">{group.totalWords}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-600 dark:text-gray-400">Completed:</span>
-                    <span className="font-medium text-green-500">{group.completed}</span>
-                  </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mt-2">
-                    <div 
-                      className="bg-gradient-to-r from-[#AA151B] to-[#F1BF00] h-2.5 rounded-full" 
-                      style={{ width: `${(group.completed / group.totalWords) * 100}%` }}
-                    ></div>
-                  </div>
+                  {loading ? (
+                    <div className="flex justify-center py-4">
+                      <Loader2 className="h-6 w-6 animate-spin text-[#AA151B]" />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600 dark:text-gray-400">Total Attempts:</span>
+                        <span className="font-medium text-gray-800 dark:text-gray-200">{group.totalAttempts}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600 dark:text-gray-400">Overall Progress:</span>
+                        <span className="font-medium text-green-500">{group.overallProgress}%</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-gray-600 dark:text-gray-400">Last Practice:</span>
+                        <span className="font-medium text-gray-800 dark:text-gray-200">{group.lastPractice}</span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mt-2">
+                        <div 
+                          className="bg-gradient-to-r from-[#AA151B] to-[#F1BF00] h-2.5 rounded-full" 
+                          style={{ width: `${group.overallProgress}%` }}
+                        ></div>
+                      </div>
+                    </>
+                  )}
                 </div>
                 <Link
                   to={`/groups/${group.id}`}

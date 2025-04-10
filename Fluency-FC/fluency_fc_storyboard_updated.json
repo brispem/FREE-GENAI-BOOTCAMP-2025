@@ -1,0 +1,124 @@
+{
+    "scenes": [
+        {
+            "id": "title_screen",
+            "file": "title_screen.png",
+            "type": "intro"
+        },
+        {
+            "id": "contract_screen",
+            "file": "contract_screen.png",
+            "type": "narrative"
+        },
+        {
+            "id": "newspaper_announcement",
+            "file": "newspaper_announcement.png",
+            "type": "announcement"
+        },
+        {
+            "id": "changing_room",
+            "file": "changing_room.png",
+            "type": "narrative"
+        },
+        {
+            "id": "penalty_training",
+            "file": "penalty_training.png",
+            "type": "side_game"
+        },
+        {
+            "id": "vs_sevilla",
+            "file": "vs_sevilla.png",
+            "type": "match_intro"
+        },
+        {
+            "id": "welcome_sevilla",
+            "file": "welcome_sevilla.png",
+            "type": "questions"
+        },
+        {
+            "id": "progress_to_next_round",
+            "file": "progress_to_next_round.png",
+            "type": "narrative"
+        },
+        {
+            "id": "map_after_sevilla",
+            "file": "map_image.png",
+            "type": "map"
+        },
+        {
+            "id": "vs_mallorca",
+            "file": "vs_mallorca.png",
+            "type": "match_intro"
+        },
+        {
+            "id": "welcome_mallorca",
+            "file": "welcome_mallorca.png",
+            "type": "questions"
+        },
+        {
+            "id": "progress_to_next_round2",
+            "file": "progress_to_next_round2.png",
+            "type": "narrative"
+        },
+        {
+            "id": "map_after_mallorca",
+            "file": "map_image.png",
+            "type": "map"
+        },
+        {
+            "id": "vs_madrid",
+            "file": "vs_madrid.png",
+            "type": "match_intro"
+        },
+        {
+            "id": "welcome_madrid",
+            "file": "welcome_madrid.png",
+            "type": "questions"
+        },
+        {
+            "id": "reach_final",
+            "file": "reach_final.png",
+            "type": "narrative"
+        },
+        {
+            "id": "map_after_madrid",
+            "file": "map_image.png",
+            "type": "map"
+        },
+        {
+            "id": "vs_barcelona",
+            "file": "vs_barcelona.png",
+            "type": "match_intro"
+        },
+        {
+            "id": "welcome_barcelona",
+            "file": "welcome_barcelona.png",
+            "type": "questions"
+        },
+        {
+            "id": "fluency_fc_wins_trophy",
+            "file": "fluency_fc_wins_trophy.png",
+            "type": "victory"
+        },
+        {
+            "id": "fluency_fc_wins_trophy2",
+            "file": "fluency_fc_wins_trophy2.png",
+            "type": "victory"
+        },
+        {
+            "id": "fluency_champion",
+            "file": "fluency_champion.png",
+            "type": "victory"
+        },
+        {
+            "id": "victory_trophy_scene",
+            "file": "victory_trophy_scene.png",
+            "type": "victory"
+        },
+        {
+            "id": "defeat_retry_screen",
+            "file": "defeat_retry_screen.png",
+            "type": "failure"
+        }
+    ]
+}

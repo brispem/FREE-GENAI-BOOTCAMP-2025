@@ -1,182 +1,180 @@
-# FREE-GENAI-BOOTCAMP-2025
-ExamProCo Free Gen-AI Bootcamp - Spanish Language Learning Portal
+# Spanish Language Learning Portal
+
+A comprehensive Spanish language learning platform featuring multiple interactive applications and study tools.
 
 ## Business Scenario
-You've been hired as an AI Engineer for a Spanish Language Learning School to extend the language offering and also augment the learning experience for students between instructor-led classes.
-
-The school has an existing learning portal and learning record store. 
-You've been tasked to:
-- Build a collection of learning apps using various different use-cases of AI
-- Maintain the learning experience the learning portal using AI developer tools
-- Extend the platform to support various different languages
+You've been hired as an AI Engineer for a Spanish Language Learning School to extend the language offering and augment the learning experience for students between instructor-led classes. The school has an existing learning portal and learning record store, and you've been tasked to build a collection of learning apps using various AI technologies.
 
 ## Project Overview
-As AI Engineers, we've successfully developed an integrated suite of AI-powered learning applications that extend the language offering and augment the learning experience for students between instructor-led classes.
+This integrated suite of AI-powered learning applications extends the language offering and augments the learning experience for students between instructor-led classes. Our solution leverages multiple AI models and technologies to create an engaging, interactive learning environment.
 
-Our solution leverages multiple AI models and technologies to create an engaging, interactive learning environment that addresses the key requirements outlined in the bootcamp brief.
+## Main Portal (Lang Portal)
 
-## Implemented AI Solutions
+The main portal serves as the central hub for all learning activities:
 
-### 1. Listening Practice Application
-- **YouTube Transcript Integration**: Extracts and processes authentic Spanish content from YouTube videos
-- **Vector Database Storage**: Stores transcripts in a vector database for efficient retrieval and contextual learning
-- **Azure AI Text-to-Speech**: Converts text to natural-sounding Spanish audio with native accents
-- **AI-Generated Comprehension Questions**: Automatically creates relevant practice questions based on content
-- **Progress Tracking**: Uses SQLite to store user progress and adapt difficulty levels
+- **Spanish History**: Learn about the rich history and evolution of the Spanish language
+- **Word Groups**: Organise vocabulary into themed collections (Core Verbs, Common Phrases, Travel Vocabulary)
+- **Flashcards**: Practise vocabulary with interactive flashcards featuring AI-generated images
+- **Progress Tracking**: Monitor your learning journey with detailed statistics and visualisations
+- **Study Sessions**: View your learning history and track time spent on activities
 
-### 2. Writing Practice Application
-- **OpenAI GPT-4o Integration**: Analyses handwritten Spanish translations
-- **Computer Vision**: Processes uploaded images of handwritten text
-- **Intelligent Feedback Generation**: Provides detailed grammar, vocabulary, and style feedback
-- **Adaptive Learning**: Adjusts difficulty based on user performance
-- **Sentence Generation**: Creates contextually relevant practice sentences
+## Study Activities
 
-### 3. Flashcards Application
-- **OpenAI DALL-E Integration**: Generates custom images for location-based vocabulary
-- **Spaced Repetition Algorithm**: Optimises learning retention through intelligent card sequencing
-- **Multi-modal Learning**: Combines text and image-based learning approaches
-- **Interactive Assessment**: Provides immediate feedback with visual reinforcement
+### 1. Fluency FC (Port 8008)
+A retro-style football game for learning Spanish. Travel through Spanish cities (Sevilla, Mallorca, Madrid, Barcelona) while completing language challenges and penalty shootouts. Built with Phaser 3 and Node.js.
 
-### 4. Spanish Language Portal
-- **Centralised Learning Hub**: Integrates all AI applications into a cohesive learning experience
-- **Progress Analytics**: Tracks and visualises learning progress across all activities
-- **Vocabulary Management**: AI-assisted organisation and categorisation of Spanish vocabulary
-- **Personalised Learning Paths**: Adapts content based on user performance and preferences
+### 2. Writing Practice (Port 8081)
+An AI-powered writing feedback system that analyses handwritten Spanish translations. Features include:
+- Handwriting analysis using OpenAI GPT-4o
+- Detailed grammar, vocabulary, and style feedback
+- Progress tracking for written exercises
+- Built with Streamlit
 
-### 5. Azure AI Foundry Translation Service
-- **Custom Translator Implementation**: Built using Azure AI Foundry's text-to-speech models
-- **Model Fine-tuning**: Utilised Azure AI Studio playground to fine-tune translation models
-- **Bilingual Capabilities**: Supports translation between English and Spanish with high accuracy
-- **Natural Pronunciation**: Integrates with text-to-speech for authentic accent reproduction
-- **Context-Aware Translation**: Maintains semantic meaning across language barriers
+### 3. Listening Comprehension (Port 8501)
+Practise listening skills with authentic Spanish content:
+- YouTube transcript extraction and processing
+- Vector database storage for efficient retrieval
+- AI-generated comprehension questions
+- Progress tracking with SQLite
+- Built with Streamlit
 
-### 6. Song Vocabulary Agent
-- **Agentic Implementation**: Created an AI agent that autonomously searches for and processes Spanish song lyrics
-- **SerpAPI & DuckDuckGoAPI Integration**: Enables web search capabilities to find authentic Spanish songs and lyrics
-- **Autonomous Decision Making**: Agent determines the most relevant content based on user queries
-- **Structured Output Generation**: Produces formatted vocabulary lists with translations and context
+### 4. Song Vocabulary
+An AI agent that autonomously searches for and processes Spanish song lyrics:
+- SerpAPI & DuckDuckGoAPI integration for web search
+- Vocabulary extraction and translation
+- Cultural context for language learning
+- Built with FastAPI
 
-## Technologies Used
+## Backend Integration
 
-### AI Models and Services
-- **OpenAI GPT-4o**: For handwriting analysis, feedback generation, and content creation
-- **OpenAI DALL-E**: For generating custom vocabulary images
-- **Azure AI Foundry**: For translation services and text-to-speech capabilities
-- **Azure Cognitive Services**: For comprehensive language understanding and processing
-- **Azure AI Studio**: For model fine-tuning and playground experimentation
-- **YouTube Transcript API**: For extracting authentic Spanish content
-- **Vector Embeddings**: For semantic search and contextual learning
-- **SerpAPI & DuckDuckGoAPI**: For web search capabilities in the Song Vocabulary Agent
-- **HuggingFace Models**: Explored and implemented various open-source models
-
-### Model Fine-Tuning and Optimisation
-- **Prompt Engineering**: Carefully crafted prompts in Azure AI Studio playground to ensure consistent outputs
-- **Parameter Optimisation**: Fine-tuned model parameters for optimal performance in language learning contexts
-- **Output Formatting**: Standardised response formats for seamless integration with the learning platform
-- **Context Window Management**: Optimised context handling for maintaining conversation history
-- **Performance Benchmarking**: Tested various model configurations to achieve the best balance of accuracy and speed
-
-### Development Stack
-- **Frontend**: React, TypeScript, Tailwind CSS, shadcn/ui, Lucide icons, Sonner toast notifications
-- **Backend**: Flask (Python), Node.js
-- **AI Integration**: OpenAI API, Azure AI SDK
-- **Data Storage**: SQLite, Vector databases
-- **UI Frameworks**: Streamlit, Gradio
-- **Deployment**: Docker, Azure VM (Ubuntu), Local development environment
-- **Development Tools**: Cursor AI assistant for enhanced coding productivity
-
-### Testing and Quality Assurance
-- **Unit Testing**: Implemented comprehensive test suite for core functionality
-- **Integration Testing**: Verified seamless interaction between different application components
-- **User Acceptance Testing**: Conducted sessions to validate usability and learning effectiveness
-- **Performance Testing**: Optimised response times and resource utilisation
-- **Cross-browser Testing**: Ensured compatibility across major web browsers
-
-## How Our Implementation Meets the Brief
-
-| Brief Requirement | Our Implementation |
-|-------------------|-------------------|
-| Spanish Text Adventure | Implemented as part of the Listening Practice app with interactive comprehension exercises |
-| Spanish Sentence Constructor | Core functionality of the Writing Practice app with AI-guided translation assistance |
-| Subtitles to Vocabulary | Integrated in Listening Practice with YouTube transcript extraction and vocabulary building |
-| Speech to Learn | Implemented through Azure TTS in the Listening Practice application |
-| Spanish Teaching Assistant | Implemented across all applications with AI-powered feedback and guidance |
-| RAG Implementation | Utilised in the Listening Practice app to extract content and enable contextual questioning |
-| Translation Services | Custom implementation using Azure AI Foundry with fine-tuned models |
-| AI Agents | Implemented in Song Vocabulary tool with autonomous web search and content processing |
-
-## Learning Journey
-Throughout this 6-week bootcamp, we gained extensive AI engineering experience through:
-- Over 40 hours of content from ExamProCo library provided by Andrew Brown and guests
-- Hands-on experience with OpenAI models and Azure AI services
-- Deployment of chat QnA on Ubuntu VM via Azure
-- Exploration of HuggingFace models and integration techniques
-- Frontend development skills with React, shadcn/ui, and modern UI components
-- AI-assisted development using Cursor as a coding assistant
-- Version control with Git and GitHub repositories for collaborative development and code management
-
-## Future Enhancements
-
-In future iterations, we plan to extend the platform with:
-
-1. **Daily Life Visual Novel Generator**: Create immersive scenarios with consistent characters and dialogue
-2. **Sign to Speak**: Implement ASL finger-spelling recognition via webcam
-3. **Multi-language Support**: Extend beyond Spanish to other languages
-4. **Mobile Application**: Develop a companion mobile app for on-the-go learning
-5. **Advanced Analytics Dashboard**: Provide deeper insights into learning patterns and progress
-6. **Community Features**: Add collaborative learning and peer review capabilities
-7. **Offline Mode**: Enable learning without internet connectivity
-8. **Advanced ASR Implementation**: Integrate optimised speech recognition for real-time conversation practice
+The Flask backend (Port 5174) provides:
+- Centralised data storage and retrieval
+- Study session management
+- Progress tracking
+- API endpoints for all frontend components
 
 ## Getting Started
 
 ### Prerequisites
-- Node.js (v16+)
-- Python (v3.8+)
-- OpenAI API key
-- Azure Cognitive Services account
-- Azure AI Foundry access
+- Docker and Docker Compose
+- Git
 
-### Installation
+### Quick Start with Docker
 
 1. Clone the repository:
-   ```
+   ```bash
    git clone https://github.com/yourusername/free-genai-bootcamp-2025.git
    cd free-genai-bootcamp-2025
    ```
 
-2. Set up environment variables:
-   - Create `.env` files in each application directory with the required API keys
-
-3. Install dependencies:
+2. Create a `.env` file in the root directory with:
    ```
-   # For the main portal
-   cd lang-portal
-   npm install
-   cd backend-flask
-   pip install -r requirements.txt
-   
-   # For the listening practice app
-   cd ../../listening-comp
-   pip install -r requirements.txt
-   
-   # For the writing practice app
-   cd ../writing-practice
-   pip install -r requirements.txt
+   # OpenAI Configuration
+   OPENAI_API_KEY=your_openai_key
+
+   # SerpAPI Configuration (for Song Vocabulary)
+   SERP_API_KEY=your_serp_api_key
+
+3. Port Configuration
+   ```
+   WRITING_PRACTICE_PORT=8081
+   FLUENCY_FC_PORT=8008
+   LISTENING_COMP_PORT=8501
+   MAIN_FRONTEND_PORT=5173
+   MAIN_BACKEND_PORT=5174
    ```
 
-4. Start the application:
+4. Start all services with Docker Compose:
+   ```bash
+   docker-compose up
    ```
-   cd ../lang-portal
-   ./start-servers.bat
-   ```
 
-5. Access the portal at `http://localhost:5173`
+5. Access the main portal at `http://localhost:5173`
 
-## Conclusion
+### Running Individual Components
 
-Our implementation demonstrates the effective use of various AI models and technologies to create an engaging, interactive Spanish language learning experience. By leveraging cutting-edge AI capabilities including natural language processing, computer vision, text-to-speech, and generative AI, we've successfully built a comprehensive solution that meets and exceeds the requirements of the bootcamp brief.
+If you prefer to run components individually, you can install all dependencies at once using the main requirements.txt file:
 
-The extensive use of Azure AI Foundry and model fine-tuning in the Azure AI Studio playground has allowed us to create highly optimised, context-aware language learning tools that provide a personalised and effective learning experience. Our approach to model optimisation ensures consistent outputs that are perfectly tailored to language learning scenarios.
+```bash
+pip install -r requirements.txt
+```
 
-The modular architecture allows for easy extension to support additional languages and features in the future, making this a scalable solution for the Spanish Language Learning School's needs.
+**Main Portal Frontend**:
+```bash
+cd lang-portal/frontend
+npm install
+npm run dev
+```
+
+**Main Portal Backend**:
+```bash
+cd lang-portal/backend-flask
+python run_server.py
+```
+
+**Fluency FC**:
+```bash
+cd Fluency-FC
+npm install
+node server.js
+```
+
+**Writing Practice**:
+```bash
+cd writing-practice
+streamlit run app.py
+```
+
+**Listening Comprehension**:
+```bash
+cd listening-comp
+streamlit run frontend/main.py
+```
+
+
+## AI Integration
+
+The platform was initially developed using Azure AI Foundry to provide models for chat completion and text-to-speech capabilities. We utilised Azure Playgrounds for model fine-tuning and prompt testing. For simplicity and to reduce configuration complexity, we've transitioned to OpenAI models, which allows users to run all components with a single API key:
+
+- **GPT-4o**: For handwriting analysis and feedback generation
+- **DALL-E**: For generating custom vocabulary images
+- **GPT-4o-tts**: For text-to-speech capabilities (replaced the old tts-1 model)
+- **Ada Embedding Model**: For vector embeddings with ChromaDB in the listening practice app
+
+## Testing
+
+The platform has been thoroughly tested:
+- Backend tests: 7/7 passing (database integrity, API responses, CORS configuration)
+- Frontend tests: 4/4 passing (core navigation, theme switching)
+- Overall coverage: ~70% of implemented features
+
+## Development Challenges
+
+We faced several challenges during development:
+- Integrating multiple apps with different frameworks into the main portal
+- Containerising components with Docker
+- CSS issues when converting Writing Practice to Streamlit from Gradio
+- Backend Flask implementation issues (temporarily moved to Node.js before fixing Flask)
+- Cursor creating a plethora of new files and folders outwith the original structure
+- Lack of Developer knowledge
+
+## Future Enhancements
+
+1. **Sign to Speak**: ASL finger-spelling recognition via webcam
+2. **Multi-language Support**: Extend beyond Spanish
+3. **Mobile Application**: Companion app for on-the-go learning
+4. **Advanced Analytics Dashboard**: Deeper insights into learning patterns
+5. **Community Features**: Collaborative learning and peer review
+6. **Offline Mode**: Learning without internet connectivity
+7. **Advanced ASR Implementation**: Real-time conversation practice
+8.  **Add more words**: Bulk out the vocabulary database
+
+## Screenshots
+
+Check the `/screenshots` directory for visual documentation of the project, including:
+- Full site walkthrough demonstration
+- Individual component demonstrations
+- User interface screenshots
+- Learning progress visualisations
+- Evidence of opea chat qna implementation
+

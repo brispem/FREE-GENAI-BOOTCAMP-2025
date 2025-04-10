@@ -1,55 +1,51 @@
 import os
-import azure.cognitiveservices.speech as speechsdk
+from openai import OpenAI
 from typing import Optional
+from pathlib import Path
+import json
+from dotenv import load_dotenv
 
 class AudioGenerator:
     def __init__(self):
-        """Initialize Azure Speech Service"""
-        # Use existing Azure Speech key and region
-        self.speech_config = speechsdk.SpeechConfig(
-            subscription=os.getenv("AZURE_SPEECH_KEY"),  # Use existing env var
-            region=os.getenv("AZURE_SPEECH_REGION")     # Use existing env var
-        )
-        # Set Spanish voice
-        self.speech_config.speech_synthesis_voice_name = "es-ES-ElviraNeural"
+        """Initialize OpenAI client for TTS"""
+        # Get the root .env file path and load it
+        root_env_path = Path(__file__).resolve().parent.parent.parent / '.env'
+        load_dotenv(root_env_path)
         
-        # Create audio directory
-        self.audio_dir = os.path.join("static", "audio")
-        os.makedirs(self.audio_dir, exist_ok=True)
+        # Initialize OpenAI client with API key from environment
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError("OPENAI_API_KEY not found in environment variables")
+            
+        self.client = OpenAI(
+            api_key=api_key,
+            base_url="https://api.openai.com/v1"  # Explicitly set base URL
+        )
+        
+        # Create audio directory in the static folder of the frontend
+        frontend_dir = Path(__file__).resolve().parent.parent / 'frontend'
+        self.audio_dir = frontend_dir / 'static' / 'audio'
+        self.audio_dir.mkdir(parents=True, exist_ok=True)
 
-    def generate_audio(self, question: dict) -> Optional[str]:
-        """Generate audio for a question"""
+    def generate_audio(self, text: str, filename: str) -> Optional[str]:
+        """Generate audio for text using OpenAI TTS"""
         try:
-            # Create unique filename
-            audio_file = os.path.join(self.audio_dir, f"question_{hash(str(question))}.wav")
-            
-            # Configure audio output
-            audio_config = speechsdk.audio.AudioOutputConfig(filename=audio_file)
-            
-            # Create synthesizer
-            synthesizer = speechsdk.SpeechSynthesizer(
-                speech_config=self.speech_config, 
-                audio_config=audio_config
-            )
-            
-            # Combine text to synthesize
-            text = f"{question['Introducción']}\n\n{question['Conversación']}"
+            # Create full path for audio file
+            audio_file = self.audio_dir / filename
             print(f"Generating audio for text: {text[:100]}...")  # Debug log
             
-            # Generate audio
-            result = synthesizer.speak_text_async(text).get()
+            # Generate audio using OpenAI TTS
+            response = self.client.audio.speech.create(
+                model="gpt-4o-mini-tts",  # Using the latest GPT TTS model
+                voice="nova",  # Using Nova voice for Spanish
+                input=text,
+                speed=0.9  # Slightly slower for better comprehension
+            )
             
-            if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
-                print(f"Audio saved to: {audio_file}")
-                return audio_file
-            elif result.reason == speechsdk.ResultReason.Canceled:
-                cancellation_details = speechsdk.CancellationDetails.from_result(result)
-                print(f"Speech synthesis canceled: {cancellation_details.reason}")
-                print(f"Error details: {cancellation_details.error_details}")
-                return None
-            else:
-                print(f"Error synthesizing audio: {result.reason}")
-                return None
+            # Save the audio file
+            response.stream_to_file(str(audio_file))
+            print(f"Audio saved to: {audio_file}")
+            return str(audio_file)
                 
         except Exception as e:
             print(f"Error generating audio: {str(e)}")

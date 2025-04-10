@@ -5,7 +5,7 @@ import logging
 from pydantic import BaseModel
 from pathlib import Path
 import os
-import openai  # Add OpenAI import
+from openai import OpenAI
 import re
 import json
 
@@ -46,115 +46,69 @@ def extract_vocabulary(text: str) -> List[dict]:
         return []
     
     try:
-        # Initialize OpenAI client with instructor
-        logger.debug("Initializing OpenAI client with instructor")
-        openai.api_key = os.getenv("OPENAI_API_KEY")
-        client = instructor.patch(openai.Client())
+        # Initialize OpenAI client
+        client = OpenAI()
         
-        # Split text into chunks if it's too long
-        chunks = split_text_into_chunks(text, max_length=1000)
-        logger.info(f"Split text into {len(chunks)} chunks")
+        # Create a simpler prompt for direct translation
+        prompt = f"""
+        Extract important Spanish vocabulary from this text and provide English translations.
+        For each word or phrase, provide:
+        1. The Spanish word/phrase
+        2. The English translation
+        3. The type (noun, verb, adjective, etc.)
         
-        all_vocabulary = []
+        Text: {text[:1000]}  # Limit to first 1000 chars to avoid token limits
         
-        # Process each chunk
-        for i, chunk in enumerate(chunks):
-            logger.info(f"Processing chunk {i+1}/{len(chunks)}")
-            
-            # Create a direct prompt for this chunk
-            prompt = f"""
-            Extract Spanish vocabulary from this song lyrics with English translations.
-            
-            For each word or phrase, provide:
-            1. The Spanish word/phrase exactly as it appears in the text
-            2. A pronunciation guide
-            3. The English translation
-            4. The type (noun, verb, adjective, etc.)
-            5. For verbs: conjugation group (ar/er/ir) and whether it's irregular
-            6. For nouns: gender (masculine/feminine)
-            7. Notes about usage or context in the song
-            
-            Lyrics chunk:
-            {chunk}
-            
-            Format each item as a JSON object with these fields:
-            - spanish: the Spanish word or phrase
-            - pronunciation: pronunciation guide
-            - english: the English translation
-            - type: the part of speech
-            - conjugation_group: for verbs (null for non-verbs)
-            - is_irregular: true/false for verbs
-            - gender: for nouns (null for non-nouns)
-            - notes: any additional information
-            """
-            
-            try:
-                # Use GPT-3.5 for faster processing
-                response = client.chat.completions.create(
-                    model="gpt-3.5-turbo",
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=0.2,
-                    response_format={"type": "json_object"}
-                )
-                
-                # Parse the JSON response
-                content = response.choices[0].message.content
-                result = json.loads(content)
-                
-                # Extract the vocabulary items
-                items = []
-                if "vocabulary" in result:
-                    items = result["vocabulary"]
-                elif isinstance(result, list):
-                    items = result
-                else:
-                    # Try to find any array in the response
-                    for key, value in result.items():
-                        if isinstance(value, list) and len(value) > 0:
-                            items = value
-                            break
-                
-                # Add to our collection
-                all_vocabulary.extend(items)
-                logger.info(f"Added {len(items)} items from chunk {i+1}")
-                
-            except Exception as e:
-                logger.error(f"Error processing chunk {i+1}: {e}")
+        Format your response as a simple list of Spanish words with their translations.
+        Example:
+        - "sí" - "yes" - adverb
+        - "sabes" - "you know" - verb
+        - "mirándote" - "looking at you" - verb
+        """
         
-        # Deduplicate by Spanish word
-        seen_words = set()
-        unique_vocabulary = []
-        
-        for item in all_vocabulary:
-            # Ensure all required fields are present
-            if not isinstance(item, dict):
-                continue
+        try:
+            response = client.chat.completions.create(
+                model="gpt-4o-2024-08-06",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.3
+            )
+            
+            # Parse the response manually
+            content = response.choices[0].message.content
+            vocabulary = []
+            
+            # Extract vocabulary items using regex
+            pattern = r'[-•*]\s*["\'"]?([^"\']+)["\'"]?\s*[-–—]\s*["\'"]?([^"\']+)["\'"]?\s*[-–—]\s*([^\n]+)'
+            matches = re.findall(pattern, content)
+            
+            for match in matches:
+                spanish = match[0].strip()
+                english = match[1].strip()
+                word_type = match[2].strip()
                 
-            spanish = item.get("spanish", "").lower()
-            if spanish and spanish not in seen_words:
-                seen_words.add(spanish)
-                
-                # Ensure all fields are present
-                complete_item = {
-                    "spanish": item.get("spanish", ""),
-                    "pronunciation": item.get("pronunciation", ""),
-                    "english": item.get("english", ""),
-                    "type": item.get("type", "unknown"),
-                    "conjugation_group": item.get("conjugation_group"),
-                    "is_irregular": item.get("is_irregular", False),
-                    "gender": item.get("gender"),
-                    "notes": item.get("notes", "")
+                item = {
+                    "spanish": spanish,
+                    "pronunciation": "",
+                    "english": english,
+                    "type": word_type,
+                    "conjugation_group": None,
+                    "is_irregular": False,
+                    "gender": None,
+                    "notes": "Automatically extracted"
                 }
                 
-                unique_vocabulary.append(complete_item)
-        
-        logger.info(f"Extracted {len(unique_vocabulary)} unique vocabulary items")
-        return unique_vocabulary
+                vocabulary.append(item)
+            
+            logger.info(f"Generated {len(vocabulary)} vocabulary items")
+            return vocabulary
+            
+        except Exception as e:
+            logger.error(f"Error in extraction: {e}")
+            return generate_fallback_vocabulary(text)
         
     except Exception as e:
         logger.error(f"Failed to extract vocabulary: {str(e)}", exc_info=True)
-        # Return an empty list instead of using fallbacks
-        return []
+        return generate_fallback_vocabulary(text)
 
 def generate_fallback_vocabulary(text: str) -> List[dict]:
     """Generate a basic vocabulary list when the main extraction fails."""
@@ -198,8 +152,7 @@ def generate_enhanced_fallback_vocabulary(text: str) -> List[dict]:
     
     try:
         # Initialize OpenAI client
-        openai.api_key = os.getenv("OPENAI_API_KEY")
-        client = openai.Client()
+        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         
         # Create a simpler prompt for direct translation
         prompt = f"""
@@ -220,7 +173,7 @@ def generate_enhanced_fallback_vocabulary(text: str) -> List[dict]:
         
         try:
             response = client.chat.completions.create(
-                model="gpt-3.5-turbo",  # Use a cheaper model for fallback
+                model="gpt-4o-2024-08-06",  # Use same model for consistency
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.3
             )

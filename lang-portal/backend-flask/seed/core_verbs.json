@@ -1,0 +1,65 @@
+{
+  "group_id": 1,
+  "words": [
+    {
+      "spanish": "ser",
+      "english": "to be (permanent)",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "estar",
+      "english": "to be (temporary)",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "ir",
+      "english": "to go",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "tener",
+      "english": "to have",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "hacer",
+      "english": "to do/make",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "poder",
+      "english": "to be able to",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "decir",
+      "english": "to say/tell",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "hablar",
+      "english": "to speak",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "comer",
+      "english": "to eat",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "beber",
+      "english": "to drink",
+      "correct": 0,
+      "wrong": 0
+    }
+  ]
+} 

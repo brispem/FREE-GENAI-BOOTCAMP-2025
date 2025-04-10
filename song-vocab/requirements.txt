@@ -1,10 +1,10 @@
 fastapi==0.109.0
 uvicorn==0.27.0
-# ollama==0.1.6  # Commented out for OpenAI usage
-openai==1.12.0
-instructor==0.4.5
-pydantic==2.6.1
-aiohttp==3.9.3
-beautifulsoup4==4.12.3
-python-dotenv
+pydantic>=2.6.2
+openai==1.71.0
+python-dotenv==1.0.1
 google-search-results
+beautifulsoup4==4.12.3
+httpx>=0.24.1
+instructor==1.7.9
+requests>=2.32.3

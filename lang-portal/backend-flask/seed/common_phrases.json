@@ -1,0 +1,65 @@
+{
+  "group_id": 2,
+  "words": [
+    {
+      "spanish": "¿Cómo estás?",
+      "english": "How are you?",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "Buenos días",
+      "english": "Good morning",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "Buenas noches",
+      "english": "Good night",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "Por favor",
+      "english": "Please",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "Gracias",
+      "english": "Thank you",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "De nada",
+      "english": "You're welcome",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "Mucho gusto",
+      "english": "Nice to meet you",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "¿Dónde está?",
+      "english": "Where is it?",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "¿Qué hora es?",
+      "english": "What time is it?",
+      "correct": 0,
+      "wrong": 0
+    },
+    {
+      "spanish": "Hasta luego",
+      "english": "See you later",
+      "correct": 0,
+      "wrong": 0
+    }
+  ]
+} 

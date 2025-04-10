@@ -9,24 +9,37 @@ interface ActivityCardProps {
   icon: React.ReactNode;
   href: string;
   level: string;
+  isExternal?: boolean;
 }
 
-export function ActivityCard({ title, description, icon, href, level }: ActivityCardProps) {
-  return (
-    <Card className="p-6">
-      <div className="flex items-center mb-4">
-        <div className="text-orange-500 mr-3">{icon}</div>
-        <h2 className="text-xl font-semibold">{title}</h2>
+export const ActivityCard: React.FC<ActivityCardProps> = ({
+  title,
+  description,
+  icon,
+  href,
+  level,
+  isExternal = false
+}) => {
+  const CardContent = () => (
+    <div className="p-6 bg-card border rounded-lg shadow-sm hover:shadow-md transition-shadow dark:border-gray-700">
+      <div className="flex items-center space-x-4 mb-4">
+        <div className="text-orange-500">{icon}</div>
+        <h3 className="text-xl font-semibold dark:text-white">{title}</h3>
       </div>
-      <p className="text-muted-foreground mb-6">{description}</p>
-      <div className="flex justify-between items-center">
-        <span className="text-sm text-muted-foreground">{level}</span>
-        <Link to={href}>
-          <Button>
-            Launch
-          </Button>
-        </Link>
+      <p className="text-muted-foreground mb-4 dark:text-gray-300">{description}</p>
+      <div className="text-sm text-orange-600 dark:text-orange-400 font-medium">
+        {level}
       </div>
-    </Card>
+    </div>
   );
-} 
+
+  return isExternal ? (
+    <a href={href} target="_blank" rel="noopener noreferrer">
+      <CardContent />
+    </a>
+  ) : (
+    <Link to={href}>
+      <CardContent />
+    </Link>
+  );
+}; 

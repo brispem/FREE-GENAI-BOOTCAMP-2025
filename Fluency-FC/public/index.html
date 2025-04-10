@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fluency FC</title>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #game-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container"></div>
+    
+    <!-- Load scenes -->
+    <script src="js/config/sceneKeys.js"></script>
+    <script src="js/scenes/TitleScene.js"></script>
+    <script src="js/scenes/ContractScene.js"></script>
+    <script src="js/scenes/NewspaperScene.js"></script>
+    <script src="js/scenes/ChangingRoomScene.js"></script>
+    <script src="js/scenes/SevillaMapScene.js"></script>
+    <script src="js/scenes/VSSevillaScene.js"></script>
+    <script src="js/scenes/WelcomeSevillaScene.js"></script>
+    <script src="js/scenes/SevillaPenaltyScene.js"></script>
+    <script src="js/scenes/MissScene.js"></script>
+    <script src="js/scenes/GoalScene.js"></script>
+    <script src="js/scenes/MallorcaMapScene.js"></script>
+    <script src="js/scenes/WelcomeMallorcaScene.js"></script>
+    <script src="js/scenes/VSMallorcaScene.js"></script>
+    <script src="js/scenes/MallorcaPenaltyScene.js"></script>
+    <script src="js/scenes/MadridMapScene.js"></script>
+    <script src="js/scenes/WelcomeMadridScene.js"></script>
+    <script src="js/scenes/VSMadridScene.js"></script>
+    <script src="js/scenes/MadridPenaltyScene.js"></script>
+    <script src="js/scenes/ReachFinalScene.js"></script>
+    <script src="js/scenes/BarcelonaMapScene.js"></script>
+    <script src="js/scenes/WelcomeBarcelonaScene.js"></script>
+    <script src="js/scenes/VSBarcelonaScene.js"></script>
+    <script src="js/scenes/BarcelonaPenaltyScene.js"></script>
+    <script src="js/scenes/VictoryTrophyScene.js"></script>
+    <script src="js/scenes/ChampionScene.js"></script>
+    
+    <!-- Load config files -->
+    <script src="js/config/gameConfig.js"></script>
+    
+    <!-- Load main game file last -->
+    <script src="js/game.js"></script>
+</body>
+</html> 

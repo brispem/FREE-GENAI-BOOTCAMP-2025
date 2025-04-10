@@ -20,20 +20,16 @@ An interactive tool for improving Spanish listening comprehension skills through
 
 ## Setup
 
-1. Install dependencies:
-   ```
+1. Ensure you have installed the root requirements:
+   ```bash
+   # From project root
    pip install -r requirements.txt
    ```
 
-2. Create a `.env` file with the following variables:
-   ```
-   TRANSLATOR_TEXT_RESOURCE_KEY=your_azure_translator_key
-   TRANSLATOR_TEXT_REGION=your_azure_region
-   AZURE_COGNITIVE_SERVICES_ENDPOINT=your_azure_endpoint
-   ```
+2. Environment variables are configured in the root `.env` file.
 
 3. Run the application:
-   ```
+   ```bash
    streamlit run frontend/main.py
    ```
 
@@ -49,7 +45,7 @@ An interactive tool for improving Spanish listening comprehension skills through
 ## Integration with Language Portal
 
 This application integrates with the main Spanish Language Learning Portal:
-- Can be launched from the Study Activities section
+- Launched from the Study Activities section
 - Includes navigation buttons to return to the main portal
 - Shares styling elements for consistent user experience
 
@@ -68,17 +64,28 @@ To modify or extend the application:
 3. YouTube transcript handling is in `backend/transcript_service.py`
 4. Database operations are in `backend/db_service.py`
 
-## How to run frontend
+## Running the Application
 
-```sh
+### Frontend
+```bash
 streamlit run frontend/main.py
 ```
 
-## How to run backend
+The application will be available at `http://localhost:8501`
 
-```sh
-cd backend
-pip install -r requirements.txt
-cd ..
-python backend/main.py
-```
+## Troubleshooting
+
+1. If you encounter Azure API issues:
+   - Verify your Azure credentials in the `.env` file
+   - Check your Azure subscription status
+   - Ensure you have the correct region set
+
+2. If YouTube transcripts fail to load:
+   - Verify the video has closed captions available
+   - Check your internet connection
+   - Try a different video URL
+
+3. If audio generation fails:
+   - Verify your Azure Cognitive Services endpoint
+   - Check your quota limits
+   - Ensure the text is within acceptable length limits
